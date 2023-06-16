@@ -105,6 +105,8 @@ public class DatabaseChangelog {
 ```
 Change logs are sorted alphabetically by `order` argument and change sets are applied due to this order.
 
+By default the no args constructor is invoked. If a constructor is defined acception an `ApplicationContext` as argument this constructor will get invoked. This allows accessing all beans in the Spring context.
+
 #### @ChangeSet
 
 Method annotated by @ChangeSet is taken and applied to the database. History of applied change sets is stored in a collection called `mbchangelog` (by default) in your MongoDB
@@ -152,6 +154,10 @@ public void someChange4(MongoTemplate mongoTemplate, Environment environment) {
   // Spring Data integration allows using MongoTemplate and Environment in the ChangeSet
 }
 ```
+
+##### Return values
+
+The return value of the change set method is written to the database, too. As an example the method could return the number of created or changed objects.
 
 ### Using Spring profiles
      
