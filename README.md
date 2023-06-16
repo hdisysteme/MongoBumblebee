@@ -9,10 +9,9 @@ The concept is very similar to other db migration tools such as [Liquibase](http
 
 The goal is to keep this tool simple and comfortable to use.
 
-
 **MongoBumblebee** provides new approach for adding changes (change sets) based on Java classes and methods with appropriate annotations.
 
-**MongoBumblebee** is a fork of [mongobee](https://github.com/mongobee/mongobee)
+**MongoBumblebee** is a fork of [mongobee](https://github.com/mongobee/mongobee). It works now with Spring Boot 3.x and uses an embedded MongoDB for unit tests.
 
 ## Getting started
 
@@ -28,7 +27,6 @@ With Maven
 ```
 With Gradle
 ```groovy
-compile 'org.javassist:javassist:3.18.2-GA' // workaround for ${javassist.version} placeholder issue*
 compile 'de.hdi:mongobumblebee:0.1'
 ```
 
@@ -41,10 +39,9 @@ In this case the migration process will be executed automatically on startup.
 ```java
 @Bean
 public MongoBumblebee mongobumblebee(){
-  MongoBumblebee runner = new MongoBumblebee("mongodb://YOUR_DB_HOST:27017/DB_NAME");
-  runner.setDbName("yourDbName");         // host must be set if not set in URI
+  MongoBumblebee runner = new MongoBumblebee("mongodb://YOUR_DB_HOST:27017/", "DB_NAME");
   runner.setChangeLogsScanPackage(
-       "com.example.yourapp.changelogs"); // the package to be scanned for changesets
+       "com.example.yourapp.changelogs"); // the package to be scanned for change sets
   
   return runner;
 }
@@ -52,15 +49,14 @@ public MongoBumblebee mongobumblebee(){
 
 
 ### Usage without Spring
-Using MongoBumblebee without a spring context has similar configuration but you have to remember to run `execute()` method to start a migration process.
+Using MongoBumblebee without a spring context has similar configuration but you have to remember to run `execute()` to start a migration process.
 
 ```java
-MongoBumblebee runner = new MongoBumblebee("mongodb://YOUR_DB_HOST:27017/DB_NAME");
-runner.setDbName("yourDbName");         // host must be set if not set in URI
+MongoBumblebee runner = new MongoBumblebee("mongodb://YOUR_DB_HOST:27017/", "DB_NAME");
 runner.setChangeLogsScanPackage(
-     "com.example.yourapp.changelogs"); // package to scan for changesets
+     "com.example.yourapp.changelogs"); // package to scan for change sets
 
-runner.execute();         //  ------> starts migration changesets
+runner.execute();         //  ------> starts migration change sets
 ```
 
 Above examples provide minimal configuration. `MongoBumblebee` object provides some other possibilities (setters) to make the tool more flexible:
@@ -69,6 +65,7 @@ Above examples provide minimal configuration. `MongoBumblebee` object provides s
 runner.setChangelogCollectionName(logColName);   // default is changelog, collection with applied change sets
 runner.setLockCollectionName(lockColName);       // default is lock, collection used during migration process
 runner.setEnabled(shouldBeEnabled);              // default is true, migration won't start if set to false
+runner.setSpringEnvironment(enviroment);         // Mandantory if `MongoBumblebee` should work with profiles
 ```
 
 MongoDB URI format:
@@ -89,7 +86,7 @@ package com.example.yourapp.changelogs;
 public class DatabaseChangelog {
   
   @ChangeSet(order = "001", id = "someChangeId", author = "testAuthor")
-  public void importantWorkToDo(DB db){
+  public void importantWorkToDo(MongoDatabase db){
      // task implementation
   }
 
@@ -106,23 +103,23 @@ public class DatabaseChangelog {
   //...
 }
 ```
-ChangeLogs are sorted alphabetically by `order` argument and changesets are applied due to this order.
+Change logs are sorted alphabetically by `order` argument and change sets are applied due to this order.
 
 #### @ChangeSet
 
-Method annotated by @ChangeSet is taken and applied to the database. History of applied change sets is stored in a collection called `dbchangelog` (by default) in your MongoDB
+Method annotated by @ChangeSet is taken and applied to the database. History of applied change sets is stored in a collection called `mbchangelog` (by default) in your MongoDB
 
 ##### Annotation parameters:
 
-`order` - string for sorting change sets in one changelog. Sorting in alphabetical order, ascending. It can be a number, a date etc.
+`order` - string for sorting change sets in one change log. Sorting in alphabetical order, ascending. It can be a number, a date etc.
 
 `id` - name of a change set, **must be unique** for all change logs in a database
 
 `author` - author of a change set
 
-`runAlways` - _[optional, default: false]_ changeset will always be executed but only first execution event will be stored in dbchangelog collection
+`runAlways` - _[optional, default: false]_ change set will always be executed but only first execution event will be stored in mbchangelog collection
 
-##### Defining ChangeSet methods
+##### Defining change set methods
 Method annotated by `@ChangeSet` can have one of the following definition:
 
 ```java
@@ -140,34 +137,16 @@ public void someChange2(MongoDatabase db) {
   mycollection.insertOne(doc);
 }
 
-@ChangeSet(order = "003", id = "someChangeWithDb", author = "testAuthor")
-public void someChange3(DB db) {
-  // This is deprecated in mongo-java-driver 3.x, use MongoDatabase instead
-  // type: com.mongodb.DB : original MongoDB driver v. 2.x, operations allowed by driver are possible
-  // example: 
-  DBCollection mycollection = db.getCollection("mycollection");
-  BasicDBObject doc = new BasicDBObject().append("test", "1");
-  mycollection .insert(doc);
-}
-
-@ChangeSet(order = "004", id = "someChangeWithJongo", author = "testAuthor")
-public void someChange4(Jongo jongo) {
-  // type: org.jongo.Jongo : Jongo driver can be used, used for simpler notation
-  // example:
-  MongoCollection mycollection = jongo.getCollection("mycollection");
-  mycollection.insert("{test : 1}");
-}
-
-@ChangeSet(order = "005", id = "someChangeWithSpringDataTemplate", author = "testAuthor")
-public void someChange5(MongoTemplate mongoTemplate) {
+@ChangeSet(order = "003", id = "someChangeWithSpringDataTemplate", author = "testAuthor")
+public void someChange3(MongoTemplate mongoTemplate) {
   // type: org.springframework.data.mongodb.core.MongoTemplate
   // Spring Data integration allows using MongoTemplate in the ChangeSet
   // example:
   mongoTemplate.save(myEntity);
 }
 
-@ChangeSet(order = "006", id = "someChangeWithSpringDataTemplate", author = "testAuthor")
-public void someChange5(MongoTemplate mongoTemplate, Environment environment) {
+@ChangeSet(order = "004", id = "someChangeWithSpringDataTemplate", author = "testAuthor")
+public void someChange4(MongoTemplate mongoTemplate, Environment environment) {
   // type: org.springframework.data.mongodb.core.MongoTemplate
   // type: org.springframework.core.env.Environment
   // Spring Data integration allows using MongoTemplate and Environment in the ChangeSet
@@ -176,24 +155,23 @@ public void someChange5(MongoTemplate mongoTemplate, Environment environment) {
 
 ### Using Spring profiles
      
-**MongoBumblebee** accepts Spring's `org.springframework.context.annotation.Profile` annotation. If a change log or change set class is annotated  with `@Profile`, 
-then it is activated for current application profiles.
+**MongoBumblebee** accepts Spring's `org.springframework.context.annotation.Profile` annotation. If a change log or change set class is annotated  with `@Profile` then it is activated for current application profiles.
 
 _Example 1_: annotated change set will be invoked for a `dev` profile
 ```java
 @Profile("dev")
 @ChangeSet(author = "testuser", id = "myDevChangest", order = "01")
-public void devEnvOnly(DB db){
+public void devEnvOnly(MongoDatabase db){
   // ...
 }
 ```
-_Example 2_: all change sets in a changelog will be invoked for a `test` profile
+_Example 2_: all change sets in a change log will be invoked for a `test` profile
 ```java
 @ChangeLog(order = "1")
 @Profile("test")
 public class ChangelogForTestEnv{
   @ChangeSet(author = "testuser", id = "myTestChangest", order = "01")
-  public void testingEnvOnly(DB db){
+  public void testingEnvOnly(MongoDatabase db){
     // ...
   } 
 }
@@ -204,9 +182,9 @@ public class ChangelogForTestEnv{
 To enable the `@Profile` integration, please inject `org.springframework.core.env.Environment` to you runner.
 
 ```java      
-@Bean @Autowired
-public MongoBumblebee mongobumblebee(Environment environment) {
-  MongoBumblebee runner = new MongoBumblebee(uri);
+@Bean 
+public MongoBumblebee mongobumblebee(@Autowired Environment environment) {
+  MongoBumblebee runner = new MongoBumblebee(uri, dbName);
   runner.setSpringEnvironment(environment)
   //... etc
 }
@@ -214,36 +192,3 @@ public MongoBumblebee mongobumblebee(Environment environment) {
 
 ## Known issues
 
-##### Mongo java driver conflicts
-
-**MongoBumblebee** depends on `mongo-java-driver`. If your application has mongo-java-driver dependency too, there could be a library conflicts in some cases.
-
-**Exception**:
-```
-com.mongodb.WriteConcernException: { "serverUsed" : "localhost" , 
-"err" : "invalid ns to index" , "code" : 10096 , "n" : 0 , 
-"connectionId" : 955 , "ok" : 1.0}
-```
-
-**Workaround**:
-
-You can exclude mongo-java-driver from **MongoBumblebee**  and use your dependency only. Maven example (pom.xml) below:
-```xml
-<dependency>
-    <groupId>org.mongodb</groupId>
-    <artifactId>mongo-java-driver</artifactId>
-    <version>3.0.0</version>
-</dependency>
-
-<dependency>
-  <groupId>de.hdi</groupId>
-  <artifactId>mongobumblebee</artifactId>
-  <version>0.9</version>
-  <exclusions>
-    <exclusion>
-      <groupId>org.mongodb</groupId>
-      <artifactId>mongo-java-driver</artifactId>
-    </exclusion>
-  </exclusions>
-</dependency>
-```
