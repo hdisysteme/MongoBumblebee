@@ -19,12 +19,11 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-import de.hdi.mongobumblebee.MongoBumblebee;
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.dao.ChangeEntryDao;
 import de.hdi.mongobumblebee.dao.ChangeEntryIndexDao;
 import de.hdi.mongobumblebee.resources.EnvironmentMock;
-import de.hdi.mongobumblebee.test.changelogs.AnotherMongobeeTestResource;
+import de.hdi.mongobumblebee.test.changelogs.AnotherMongoBumblebeeTestResource;
 import de.hdi.mongobumblebee.test.profiles.def.UnProfiledChangeLog;
 import de.hdi.mongobumblebee.test.profiles.dev.ProfiledDevChangeLog;
 
@@ -38,7 +37,7 @@ import de.hdi.mongobumblebee.test.profiles.dev.ProfiledDevChangeLog;
 class MongoBumblebeeProfileTest {
 
 	/**
-	 * Number of all changelogs in com.github.mongobee.test.changelogs
+	 * Number of all changelogs in de.hdi.mongobumblebee.test.changelogs
 	 */
 	private static final int CHANGELOG_COUNT = 9;
 
@@ -165,7 +164,7 @@ class MongoBumblebeeProfileTest {
 	void shouldRunChangeSetsWhenNoEnv() throws Exception {
 		// given
 		runner.setSpringEnvironment(null);
-		runner.setChangeLogsScanPackage(AnotherMongobeeTestResource.class.getPackage().getName());
+		runner.setChangeLogsScanPackage(AnotherMongoBumblebeeTestResource.class.getPackage().getName());
 		when(dao.isNewChange(any(ChangeEntry.class))).thenReturn(true);
 		when(dao.getMongoDatabase()).thenReturn(mongoDatabase);
 		doCallRealMethod().when(dao).save(any(ChangeEntry.class));
@@ -182,7 +181,7 @@ class MongoBumblebeeProfileTest {
 	void shouldRunChangeSetsWhenEmptyEnv() throws Exception {
 		// given
 		runner.setSpringEnvironment(new EnvironmentMock());
-		runner.setChangeLogsScanPackage(AnotherMongobeeTestResource.class.getPackage().getName());
+		runner.setChangeLogsScanPackage(AnotherMongoBumblebeeTestResource.class.getPackage().getName());
 		when(dao.isNewChange(any(ChangeEntry.class))).thenReturn(true);
 		when(dao.getMongoDatabase()).thenReturn(mongoDatabase);
 		doCallRealMethod().when(dao).save(any(ChangeEntry.class));
@@ -199,7 +198,7 @@ class MongoBumblebeeProfileTest {
 	void shouldRunAllChangeSets() throws Exception {
 		// given
 		runner.setSpringEnvironment(new EnvironmentMock("dev"));
-		runner.setChangeLogsScanPackage(AnotherMongobeeTestResource.class.getPackage().getName());
+		runner.setChangeLogsScanPackage(AnotherMongoBumblebeeTestResource.class.getPackage().getName());
 		when(dao.isNewChange(any(ChangeEntry.class))).thenReturn(true);
 		when(dao.getMongoDatabase()).thenReturn(mongoDatabase);
 		doCallRealMethod().when(dao).save(any(ChangeEntry.class));

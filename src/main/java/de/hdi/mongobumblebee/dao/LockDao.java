@@ -33,7 +33,7 @@ public class LockDao {
 
 	private void createCollectionAndUniqueIndexIfNotExists(MongoDatabase db) {
 		Document indexKeys = new Document(KEY_PROP_NAME, INDEX_SORT_ASC);
-		IndexOptions indexOptions = new IndexOptions().unique(true).name("mongobeelock_key_idx");
+		IndexOptions indexOptions = new IndexOptions().unique(true).name("mongobumblebeelock_key_idx");
 
 		db.getCollection(lockCollectionName).createIndex(indexKeys, indexOptions);
 	}

@@ -12,7 +12,7 @@ import de.hdi.mongobumblebee.changeset.ChangeSet;
  * @since 30.07.14
  */
 @ChangeLog(order = "2")
-public class AnotherMongobeeTestResource {
+public class AnotherMongoBumblebeeTestResource {
 
 	@ChangeSet(author = MongoBumblebeeTest.USER, id = "Btest1", order = "01")
 	public void testChangeSet(){

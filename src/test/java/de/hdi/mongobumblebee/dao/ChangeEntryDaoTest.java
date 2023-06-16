@@ -21,8 +21,8 @@ import de.hdi.mongobumblebee.MongoBumblebeeTest;
 import de.hdi.mongobumblebee.dao.ChangeEntryDao;
 import de.hdi.mongobumblebee.dao.ChangeEntryIndexDao;
 import de.hdi.mongobumblebee.dao.LockDao;
-import de.hdi.mongobumblebee.exception.MongobeeConfigurationException;
-import de.hdi.mongobumblebee.exception.MongobeeLockException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeLockException;
 
 /**
  * @author lstolowski
@@ -36,7 +36,7 @@ class ChangeEntryDaoTest {
 	private static final boolean THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK = false;
 
 	@Test
-	void shouldCreateChangeIdAuthorIndexIfNotFound() throws MongobeeConfigurationException {
+	void shouldCreateChangeIdAuthorIndexIfNotFound() throws MongoBumblebeeConfigurationException {
 
 		// given
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, WAIT_FOR_LOCK,
@@ -61,7 +61,7 @@ class ChangeEntryDaoTest {
 	}
 
 	@Test
-	void shouldNotCreateChangeIdAuthorIndexIfFound() throws MongobeeConfigurationException {
+	void shouldNotCreateChangeIdAuthorIndexIfFound() throws MongoBumblebeeConfigurationException {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
@@ -85,7 +85,7 @@ class ChangeEntryDaoTest {
 	}
 
 	@Test
-	void shouldRecreateChangeIdAuthorIndexIfFoundNotUnique() throws MongobeeConfigurationException {
+	void shouldRecreateChangeIdAuthorIndexIfFoundNotUnique() throws MongoBumblebeeConfigurationException {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
@@ -109,7 +109,7 @@ class ChangeEntryDaoTest {
 	}
 
 	@Test
-	void shouldInitiateLock() throws MongobeeConfigurationException {
+	void shouldInitiateLock() throws MongoBumblebeeConfigurationException {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
@@ -196,7 +196,7 @@ class ChangeEntryDaoTest {
 
 		dao.connectMongoDb(mongoClient, MongoBumblebeeTest.DB_NAME);
 
-		assertThrows(MongobeeLockException.class, () -> dao.acquireProcessLock());
+		assertThrows(MongoBumblebeeLockException.class, () -> dao.acquireProcessLock());
 	}
 
 	@Test

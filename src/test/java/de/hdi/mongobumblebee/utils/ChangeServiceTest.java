@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test;
 
 import de.hdi.mongobumblebee.MongoBumblebeeTest;
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
-import de.hdi.mongobumblebee.exception.MongobeeChangeSetException;
-import de.hdi.mongobumblebee.test.changelogs.AnotherMongobeeTestResource;
-import de.hdi.mongobumblebee.test.changelogs.MongobeeTestResource;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeChangeSetException;
+import de.hdi.mongobumblebee.test.changelogs.AnotherMongoBumblebeeTestResource;
+import de.hdi.mongobumblebee.test.changelogs.MongoBumblebeeTestResource;
 import de.hdi.mongobumblebee.utils.ChangeService;
 
 /**
@@ -28,7 +28,7 @@ class ChangeServiceTest {
 	@Test
 	void shouldFindChangeLogClasses(){
 		// given
-		String scanPackage = MongobeeTestResource.class.getPackage().getName();
+		String scanPackage = MongoBumblebeeTestResource.class.getPackage().getName();
 		ChangeService service = new ChangeService(scanPackage);
 
 		// when
@@ -39,13 +39,13 @@ class ChangeServiceTest {
 	}
 
 	@Test
-	void shouldFindChangeSetMethods() throws MongobeeChangeSetException {
+	void shouldFindChangeSetMethods() throws MongoBumblebeeChangeSetException {
 		// given
-		String scanPackage = MongobeeTestResource.class.getPackage().getName();
+		String scanPackage = MongoBumblebeeTestResource.class.getPackage().getName();
 		ChangeService service = new ChangeService(scanPackage);
 
 		// when
-		List<Method> foundMethods = service.fetchChangeSets(MongobeeTestResource.class);
+		List<Method> foundMethods = service.fetchChangeSets(MongoBumblebeeTestResource.class);
 
 		// then
 		assertNotNull(foundMethods);
@@ -53,13 +53,13 @@ class ChangeServiceTest {
 	}
 
 	@Test
-	void shouldFindAnotherChangeSetMethods() throws MongobeeChangeSetException {
+	void shouldFindAnotherChangeSetMethods() throws MongoBumblebeeChangeSetException {
 		// given
-		String scanPackage = MongobeeTestResource.class.getPackage().getName();
+		String scanPackage = MongoBumblebeeTestResource.class.getPackage().getName();
 		ChangeService service = new ChangeService(scanPackage);
 
 		// when
-		List<Method> foundMethods = service.fetchChangeSets(AnotherMongobeeTestResource.class);
+		List<Method> foundMethods = service.fetchChangeSets(AnotherMongoBumblebeeTestResource.class);
 
 		// then
 		assertNotNull(foundMethods);
@@ -68,13 +68,13 @@ class ChangeServiceTest {
 
 
 	@Test
-	void shouldFindIsRunAlwaysMethod() throws MongobeeChangeSetException {
+	void shouldFindIsRunAlwaysMethod() throws MongoBumblebeeChangeSetException {
 		// given
-		String scanPackage = MongobeeTestResource.class.getPackage().getName();
+		String scanPackage = MongoBumblebeeTestResource.class.getPackage().getName();
 		ChangeService service = new ChangeService(scanPackage);
 
 		// when
-		List<Method> foundMethods = service.fetchChangeSets(AnotherMongobeeTestResource.class);
+		List<Method> foundMethods = service.fetchChangeSets(AnotherMongoBumblebeeTestResource.class);
 		// then
 		for (Method foundMethod : foundMethods) {
 			if (foundMethod.getName().equals("testChangeSetWithAlways")){
@@ -86,12 +86,12 @@ class ChangeServiceTest {
 	}
 
 	@Test
-	void shouldCreateEntry() throws MongobeeChangeSetException {
+	void shouldCreateEntry() throws MongoBumblebeeChangeSetException {
 
 		// given
-		String scanPackage = MongobeeTestResource.class.getPackage().getName();
+		String scanPackage = MongoBumblebeeTestResource.class.getPackage().getName();
 		ChangeService service = new ChangeService(scanPackage);
-		List<Method> foundMethods = service.fetchChangeSets(MongobeeTestResource.class);
+		List<Method> foundMethods = service.fetchChangeSets(MongoBumblebeeTestResource.class);
 
 		for (Method foundMethod : foundMethods) {
 
@@ -100,7 +100,7 @@ class ChangeServiceTest {
 
 			// then
 			assertEquals(MongoBumblebeeTest.USER, entry.getAuthor());
-			assertEquals(MongobeeTestResource.class.getName(), entry.getChangeLogClass());
+			assertEquals(MongoBumblebeeTestResource.class.getName(), entry.getChangeLogClass());
 			assertNotNull(entry.getTimestamp());
 			assertNotNull(entry.getChangeId());
 			assertNotNull(entry.getChangeSetMethodName());
@@ -108,10 +108,10 @@ class ChangeServiceTest {
 	}
 
 	@Test
-	void shouldFailOnDuplicatedChangeSets() throws MongobeeChangeSetException {
+	void shouldFailOnDuplicatedChangeSets() throws MongoBumblebeeChangeSetException {
 		String scanPackage = ChangeLogWithDuplicate.class.getPackage().getName();
 		final ChangeService service = new ChangeService(scanPackage);
-		Assertions.assertThrows(MongobeeChangeSetException.class, () -> service.fetchChangeSets(ChangeLogWithDuplicate.class));
+		Assertions.assertThrows(MongoBumblebeeChangeSetException.class, () -> service.fetchChangeSets(ChangeLogWithDuplicate.class));
 	}
 
 }

@@ -6,9 +6,9 @@ package de.hdi.mongobumblebee.exception;
  * @author lstolowski
  * @since 27/07/2014
  */
-public class MongobeeConnectionException extends MongobeeException {
+public class MongoBumblebeeConnectionException extends MongoBumblebeeException {
 	
-	public MongobeeConnectionException(String message, Exception baseException) {
+	public MongoBumblebeeConnectionException(String message, Exception baseException) {
 		super(message, baseException);
 	}
 }

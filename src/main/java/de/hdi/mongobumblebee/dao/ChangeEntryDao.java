@@ -11,9 +11,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
-import de.hdi.mongobumblebee.exception.MongobeeConfigurationException;
-import de.hdi.mongobumblebee.exception.MongobeeConnectionException;
-import de.hdi.mongobumblebee.exception.MongobeeLockException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeConnectionException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeLockException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -54,9 +54,9 @@ public class ChangeEntryDao {
 		this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
 	}
 
-	public MongoDatabase connectMongoDb(MongoClient mongoClient, String dbName) throws MongobeeConfigurationException {
+	public MongoDatabase connectMongoDb(MongoClient mongoClient, String dbName) throws MongoBumblebeeConfigurationException {
 		if (!hasText(dbName)) {
-			throw new MongobeeConfigurationException("DB name is not set. Should be defined in MongoDB URI or via setter");
+			throw new MongoBumblebeeConfigurationException("DB name is not set. Should be defined in MongoDB URI or via setter");
 		} 
 
 		this.mongoClient = mongoClient;
@@ -72,10 +72,10 @@ public class ChangeEntryDao {
 	 * Try to acquire process lock
 	 *
 	 * @return true if successfully acquired, false otherwise
-	 * @throws MongobeeConnectionException exception
-	 * @throws MongobeeLockException exception
+	 * @throws MongoBumblebeeConnectionException exception
+	 * @throws MongoBumblebeeLockException exception
 	 */
-	public boolean acquireProcessLock() throws MongobeeConnectionException, MongobeeLockException {
+	public boolean acquireProcessLock() throws MongoBumblebeeConnectionException, MongoBumblebeeLockException {
 		verifyDbConnection();
 		boolean acquired = lockDao.acquireLock(getMongoDatabase());
 
@@ -95,43 +95,43 @@ public class ChangeEntryDao {
 		}
 
 		if (!acquired && throwExceptionIfCannotObtainLock) {
-			log.info("Mongobee did not acquire process lock. Throwing exception.");
-			throw new MongobeeLockException("Could not acquire process lock");
+			log.info("MongoBumblebee did not acquire process lock. Throwing exception.");
+			throw new MongoBumblebeeLockException("Could not acquire process lock");
 		}
 
 		return acquired;
 	}
 
-	public void releaseProcessLock() throws MongobeeConnectionException {
+	public void releaseProcessLock() throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 		lockDao.releaseLock(getMongoDatabase());
 	}
 
-	public boolean isProccessLockHeld() throws MongobeeConnectionException {
+	public boolean isProccessLockHeld() throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 		return lockDao.isLockHeld(getMongoDatabase());
 	}
 
-	public boolean isNewChange(ChangeEntry changeEntry) throws MongobeeConnectionException {
+	public boolean isNewChange(ChangeEntry changeEntry) throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 
-		MongoCollection<Document> mongobeeChangeLog = getMongoDatabase().getCollection(changelogCollectionName);
-		Document entry = mongobeeChangeLog.find(changeEntry.buildSearchQueryDBObject()).first();
+		MongoCollection<Document> mongoBumblebeeChangeLog = getMongoDatabase().getCollection(changelogCollectionName);
+		Document entry = mongoBumblebeeChangeLog.find(changeEntry.buildSearchQueryDBObject()).first();
 
 		return entry == null;
 	}
 
-	public void save(ChangeEntry changeEntry) throws MongobeeConnectionException {
+	public void save(ChangeEntry changeEntry) throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 
-		MongoCollection<Document> mongobeeLog = getMongoDatabase().getCollection(changelogCollectionName);
+		MongoCollection<Document> mongoBumblebeeLog = getMongoDatabase().getCollection(changelogCollectionName);
 
-		mongobeeLog.insertOne(changeEntry.buildFullDBObject());
+		mongoBumblebeeLog.insertOne(changeEntry.buildFullDBObject());
 	}
 
-	private void verifyDbConnection() throws MongobeeConnectionException {
+	private void verifyDbConnection() throws MongoBumblebeeConnectionException {
 		if (getMongoDatabase() == null) {
-			throw new MongobeeConnectionException("Database is not connected. Mongobee has thrown an unexpected error",
+			throw new MongoBumblebeeConnectionException("Database is not connected. MongoBumblebee has thrown an unexpected error",
 					new NullPointerException());
 		}
 	}

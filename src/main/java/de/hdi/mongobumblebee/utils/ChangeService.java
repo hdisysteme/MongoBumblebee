@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.changeset.ChangeLog;
 import de.hdi.mongobumblebee.changeset.ChangeSet;
-import de.hdi.mongobumblebee.exception.MongobeeChangeSetException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeChangeSetException;
 
 /**
  * Utilities to deal with reflections and annotations
@@ -58,7 +58,7 @@ public class ChangeService {
 		return filteredChangeLogs;
 	}
 
-	public List<Method> fetchChangeSets(final Class<?> type) throws MongobeeChangeSetException {
+	public List<Method> fetchChangeSets(final Class<?> type) throws MongoBumblebeeChangeSetException {
 		final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
 		final List<Method> filteredChangeSets = (List<Method>) filterByActiveProfiles(changeSets);
 
@@ -85,7 +85,8 @@ public class ChangeService {
 					annotation.author(),
 					new Date(),
 					changesetMethod.getDeclaringClass().getName(),
-					changesetMethod.getName());
+					changesetMethod.getName(),
+					null);
 		} else {
 			return null;
 		}
@@ -121,14 +122,14 @@ public class ChangeService {
 		return filtered;
 	}
 
-	private List<Method> filterChangeSetAnnotation(List<Method> allMethods) throws MongobeeChangeSetException {
+	private List<Method> filterChangeSetAnnotation(List<Method> allMethods) throws MongoBumblebeeChangeSetException {
 		final Set<String> changeSetIds = new HashSet<>();
 		final List<Method> changesetMethods = new ArrayList<>();
 		for (final Method method : allMethods) {
 			if (method.isAnnotationPresent(ChangeSet.class)) {
 				String id = method.getAnnotation(ChangeSet.class).id();
 				if (changeSetIds.contains(id)) {
-					throw new MongobeeChangeSetException(String.format("Duplicated changeset id found: '%s'", id));
+					throw new MongoBumblebeeChangeSetException(String.format("Duplicated changeset id found: '%s'", id));
 				}
 				changeSetIds.add(id);
 				changesetMethods.add(method);

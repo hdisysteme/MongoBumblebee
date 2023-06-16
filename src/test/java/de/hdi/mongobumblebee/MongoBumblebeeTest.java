@@ -27,20 +27,19 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-import de.hdi.mongobumblebee.MongoBumblebee;
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.dao.ChangeEntryDao;
 import de.hdi.mongobumblebee.dao.ChangeEntryIndexDao;
-import de.hdi.mongobumblebee.exception.MongobeeConfigurationException;
-import de.hdi.mongobumblebee.exception.MongobeeException;
-import de.hdi.mongobumblebee.test.changelogs.MongobeeTestResource;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeException;
+import de.hdi.mongobumblebee.test.changelogs.MongoBumblebeeTestResource;
 
 @ExtendWith(MockitoExtension.class)
 public class MongoBumblebeeTest {
 
 	public static final String USER = "testuser";
 	
-	public static final String DB_NAME = "mongobeetest";
+	public static final String DB_NAME = "MongoBumblebeeTest";
 	
 	public static final String CHANGELOG_COLLECTION_NAME = "changelog";
 	
@@ -58,7 +57,7 @@ public class MongoBumblebeeTest {
 	private MongoDatabase mongoDatabase;
 
 	@BeforeEach
-	void init() throws MongobeeException, UnknownHostException {
+	void init() throws MongoBumblebeeException, UnknownHostException {
 		MongoClient mongoClient = MongoClients.create();
 		mongoDatabase = mongoClient.getDatabase(DB_NAME);
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, DB_NAME);
@@ -70,15 +69,15 @@ public class MongoBumblebeeTest {
 		dao.setChangelogCollectionName(CHANGELOG_COLLECTION_NAME);
 
 		runner.setEnabled(true);
-		runner.setChangeLogsScanPackage(MongobeeTestResource.class.getPackage().getName());
+		runner.setChangeLogsScanPackage(MongoBumblebeeTestResource.class.getPackage().getName());
 	}
 
 	@Test
 	void shouldThrowAnExceptionIfNoDbNameSet() throws Exception {
 		MongoBumblebee runner = new MongoBumblebee("mongodb://localhost:27017/", "");
 		runner.setEnabled(true);
-		runner.setChangeLogsScanPackage(MongobeeTestResource.class.getPackage().getName());
-		assertThrows(MongobeeConfigurationException.class, () -> runner.execute());
+		runner.setChangeLogsScanPackage(MongoBumblebeeTestResource.class.getPackage().getName());
+		assertThrows(MongoBumblebeeConfigurationException.class, () -> runner.execute());
 	}
 
 	@Test

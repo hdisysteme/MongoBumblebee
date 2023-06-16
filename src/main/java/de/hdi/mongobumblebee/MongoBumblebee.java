@@ -18,15 +18,15 @@ import com.mongodb.client.MongoDatabase;
 
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.dao.ChangeEntryDao;
-import de.hdi.mongobumblebee.exception.MongobeeChangeSetException;
-import de.hdi.mongobumblebee.exception.MongobeeConfigurationException;
-import de.hdi.mongobumblebee.exception.MongobeeConnectionException;
-import de.hdi.mongobumblebee.exception.MongobeeException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeChangeSetException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeConnectionException;
+import de.hdi.mongobumblebee.exception.MongoBumblebeeException;
 import de.hdi.mongobumblebee.utils.ChangeService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Mongobee runner
+ * MongoBumblebee runner
  *
  * @author lstolowski
  * @since 26/07/2014
@@ -37,8 +37,8 @@ public class MongoBumblebee implements InitializingBean {
 	@Autowired(required = false)
 	private ApplicationContext applicationContext;
 	
-	private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "changelog";
-	private static final String DEFAULT_LOCK_COLLECTION_NAME = "mongobeelock";
+	private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "mbbchangelog";
+	private static final String DEFAULT_LOCK_COLLECTION_NAME = "mbblock";
 	private static final boolean DEFAULT_WAIT_FOR_LOCK = false;
 	private static final long DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME = 5L;
 	private static final long DEFAULT_CHANGE_LOG_LOCK_POLL_RATE = 10L;
@@ -61,7 +61,7 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param mongoClient
 	 *            database connection client
-	 * @throws MongobeeConfigurationException 
+	 * @throws MongoBumblebeeConfigurationException 
 	 * @see MongoClient
 	 */
 	public MongoBumblebee(@NonNull MongoClient mongoClient, @NonNull String dbName) {
@@ -72,7 +72,7 @@ public class MongoBumblebee implements InitializingBean {
 
 	/**
 	 * <p>
-	 * Mongobee runner. Correct MongoDB URI should be provided.
+	 * MongoBumblebee runner. Correct MongoDB URI should be provided.
 	 * </p>
 	 * <p>
 	 * The format of the URI is:
@@ -87,7 +87,7 @@ public class MongoBumblebee implements InitializingBean {
 	 * <li>{@code host1} Required. It identifies a server address to connect to. More than one host can be provided.</li>
 	 * <li>{@code :portX} is optional and defaults to :27017 if not provided.</li>
 	 * <li>{@code /database} the name of the database to login to and thus is only relevant if the {@code username:password@} syntax is used. If not specified
-	 * the "admin" database will be used by default. <b>Mongobee will operate on the database provided here or on the database overriden by setter
+	 * the "admin" database will be used by default. <b>MongoBumblebee will operate on the database provided here or on the database overriden by setter
 	 * setDbName(String).</b></li>
 	 * <li>{@code ?options} are connection options. For list of options please see com.mongodb.MongoClientURI docs</li>
 	 * </ul>
@@ -96,7 +96,7 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param mongoURI
 	 *            with correct format
-	 * @throws MongobeeConfigurationException 
+	 * @throws MongoBumblebeeConfigurationException 
 	 * @see com.mongodb.MongoClientURI
 	 */
 
@@ -105,7 +105,7 @@ public class MongoBumblebee implements InitializingBean {
 	}
 
 	/**
-	 * For Spring users: executing mongobee after bean is created in the Spring context
+	 * For Spring users: executing MongoBumblebee after bean is created in the Spring context
 	 *
 	 * @throws Exception
 	 *             exception
@@ -118,12 +118,12 @@ public class MongoBumblebee implements InitializingBean {
 	/**
 	 * Executing migration
 	 *
-	 * @throws MongobeeException
+	 * @throws MongoBumblebeeException
 	 *             exception
 	 */
-	public void execute() throws MongobeeException {
+	public void execute() throws MongoBumblebeeException {
 		if (!isEnabled()) {
-			log.info("Mongobee is disabled. Exiting.");
+			log.info("MongoBumblebee is disabled. Exiting.");
 			return;
 		}
 
@@ -134,23 +134,23 @@ public class MongoBumblebee implements InitializingBean {
 		} 
 
 		if (!dao.acquireProcessLock()) {
-			log.info("Mongobee did not acquire process lock. Exiting.");
+			log.info("MongoBumblebee did not acquire process lock. Exiting.");
 			return;
 		}
 
-		log.info("Mongobee acquired process lock, starting the data migration sequence..");
+		log.info("MongoBumblebee acquired process lock, starting the data migration sequence..");
 
 		try {
 			executeMigration();
 		} finally {
-			log.info("Mongobee is releasing process lock.");
+			log.info("MongoBumblebee is releasing process lock.");
 			dao.releaseProcessLock();
 		}
 
-		log.info("Mongobee has finished his job.");
+		log.info("MongoBumblebee has finished his job.");
 	}
 
-	private void executeMigration() throws MongobeeConnectionException, MongobeeException {
+	private void executeMigration() throws MongoBumblebeeConnectionException, MongoBumblebeeException {
 
 		ChangeService service = new ChangeService(changeLogsScanPackage, springEnvironment);
 
@@ -170,30 +170,32 @@ public class MongoBumblebee implements InitializingBean {
 
 					try {
 						if (dao.isNewChange(changeEntry)) {
-							executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
+							var result = executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
+							changeEntry.setResult(result);
 							dao.save(changeEntry);
-							log.info(changeEntry + " applied");
+							log.info(changeEntry + " applied. Return= " + result);
 						} else if (service.isRunAlwaysChangeSet(changesetMethod)) {
-							executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
-							log.info(changeEntry + " reapplied");
+							var result = executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
+							changeEntry.setResult(result);
+							dao.save(changeEntry);
+							log.info(changeEntry + " reapplied. Return= " + result);
 						} else {
 							log.info(changeEntry + " passed over");
 						}
-					} catch (MongobeeChangeSetException e) {
+					} catch (MongoBumblebeeChangeSetException e) {
 						log.error(e.getMessage());
 					}
 				}
 			} catch (NoSuchMethodException | IllegalAccessException |InstantiationException e) {
-				throw new MongobeeException(e.getMessage(), e);
+				throw new MongoBumblebeeException(e.getMessage(), e);
 			} catch (InvocationTargetException e) {
 				Throwable targetException = e.getTargetException();
-				throw new MongobeeException(targetException.getMessage(), e);
+				throw new MongoBumblebeeException(targetException.getMessage(), e);
 			}
-
 		}
 	}
 
-	private Object executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance, MongoDatabase mongoDatabase) throws IllegalAccessException, InvocationTargetException, MongobeeChangeSetException {
+	private Object executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance, MongoDatabase mongoDatabase) throws IllegalAccessException, InvocationTargetException, MongoBumblebeeChangeSetException {
 		if (changeSetMethod.getParameterTypes().length == 1 && changeSetMethod.getParameterTypes()[0].equals(MongoTemplate.class)) {
 			log.debug("method with MongoTemplate argument");
 
@@ -211,25 +213,25 @@ public class MongoBumblebee implements InitializingBean {
 
 			return changeSetMethod.invoke(changeLogInstance);
 		} else {
-			throw new MongobeeChangeSetException("ChangeSet method " + changeSetMethod.getName() + " has wrong arguments list. Please see docs for more info!");
+			throw new MongoBumblebeeChangeSetException("ChangeSet method " + changeSetMethod.getName() + " has wrong arguments list. Please see docs for more info!");
 		}
 	}
 
-	private void validateConfig() throws MongobeeConfigurationException {
+	private void validateConfig() throws MongoBumblebeeConfigurationException {
 		if (!StringUtils.hasText(dbName)) {
-			throw new MongobeeConfigurationException("DB name is not set. It should be defined in MongoDB URI");
+			throw new MongoBumblebeeConfigurationException("DB name is not set. It should be defined in MongoDB URI");
 		}
 		if (!StringUtils.hasText(changeLogsScanPackage)) {
-			throw new MongobeeConfigurationException("Scan package for changelogs is not set: use appropriate setter");
+			throw new MongoBumblebeeConfigurationException("Scan package for changelogs is not set: use appropriate setter");
 		}
 	}
 
 	/**
 	 * @return true if an execution is in progress, in any process.
-	 * @throws MongobeeConnectionException
+	 * @throws MongoBumblebeeConnectionException
 	 *             exception
 	 */
-	public boolean isExecutionInProgress() throws MongobeeConnectionException {
+	public boolean isExecutionInProgress() throws MongoBumblebeeConnectionException {
 		return dao.isProccessLockHeld();
 	}
 
@@ -238,7 +240,7 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param changeLogsScanPackage
 	 *            package where your changelogs are
-	 * @return Mongobee object for fluent interface
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setChangeLogsScanPackage(String changeLogsScanPackage) {
 		this.changeLogsScanPackage = changeLogsScanPackage;
@@ -246,18 +248,18 @@ public class MongoBumblebee implements InitializingBean {
 	}
 
 	/**
-	 * @return true if Mongobee runner is enabled and able to run, otherwise false
+	 * @return true if MongoBumblebee runner is enabled and able to run, otherwise false
 	 */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
 	/**
-	 * Feature which enables/disables Mongobee runner execution
+	 * Feature which enables/disables MongoBumblebee runner execution
 	 *
 	 * @param enabled
-	 *            MOngobee will run only if this option is set to true
-	 * @return Mongobee object for fluent interface
+	 *            MongoBumblebee will run only if this option is set to true
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -268,8 +270,8 @@ public class MongoBumblebee implements InitializingBean {
 	 * Feature which enables/disables waiting for lock if it's already obtained
 	 *
 	 * @param waitForLock
-	 *            Mongobee will be waiting for lock if it's already obtained if this option is set to true
-	 * @return Mongobee object for fluent interface
+	 *            MongoBumblebee will be waiting for lock if it's already obtained if this option is set to true
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setWaitForLock(boolean waitForLock) {
 		this.dao.setWaitForLock(waitForLock);
@@ -281,7 +283,7 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param changeLogLockWaitTime
 	 *            Waiting time in minutes for acquiring lock
-	 * @return Mongobee object for fluent interface
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setChangeLogLockWaitTime(long changeLogLockWaitTime) {
 		this.dao.setChangeLogLockWaitTime(changeLogLockWaitTime);
@@ -293,7 +295,7 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param changeLogLockPollRate
 	 *            Poll rate in seconds for acquiring lock
-	 * @return Mongobee object for fluent interface
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setChangeLogLockPollRate(long changeLogLockPollRate) {
 		this.dao.setChangeLogLockPollRate(changeLogLockPollRate);
@@ -301,11 +303,11 @@ public class MongoBumblebee implements InitializingBean {
 	}
 
 	/**
-	 * Feature which enables/disables throwing MongobeeLockException if Mongobee can not obtain lock
+	 * Feature which enables/disables throwing MongoBumblebeeLockException if MongoBumblebee can not obtain lock
 	 *
 	 * @param throwExceptionIfCannotObtainLock
-	 *            Mongobee will throw MongobeeLockException if lock can not be obtained
-	 * @return Mongobee object for fluent interface
+	 *            MongoBumblebee will throw MongoBumblebeeLockException if lock can not be obtained
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
 		this.dao.setThrowExceptionIfCannotObtainLock(throwExceptionIfCannotObtainLock);
@@ -317,7 +319,7 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param environment
 	 *            org.springframework.core.env.Environment object to inject
-	 * @return Mongobee object for fluent interface
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setSpringEnvironment(Environment environment) {
 		this.springEnvironment = environment;
@@ -325,13 +327,13 @@ public class MongoBumblebee implements InitializingBean {
 	}
 
 	/**
-	 * Overwrites a default mongobee changelog collection hardcoded in DEFAULT_CHANGELOG_COLLECTION_NAME.
+	 * Overwrites a default MongoBumblebee changelog collection hardcoded in DEFAULT_CHANGELOG_COLLECTION_NAME.
 	 *
 	 * CAUTION! Use this method carefully - when changing the name on a existing system, your changelogs will be executed again on your MongoDB instance
 	 *
 	 * @param changelogCollectionName
 	 *            a new changelog collection name
-	 * @return Mongobee object for fluent interface
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setChangelogCollectionName(String changelogCollectionName) {
 		this.dao.setChangelogCollectionName(changelogCollectionName);
@@ -339,11 +341,11 @@ public class MongoBumblebee implements InitializingBean {
 	}
 
 	/**
-	 * Overwrites a default mongobee lock collection hardcoded in DEFAULT_LOCK_COLLECTION_NAME
+	 * Overwrites a default MongoBumblebee lock collection hardcoded in DEFAULT_LOCK_COLLECTION_NAME
 	 *
 	 * @param lockCollectionName
 	 *            a new lock collection name
-	 * @return Mongobee object for fluent interface
+	 * @return MongoBumblebee object for fluent interface
 	 */
 	public MongoBumblebee setLockCollectionName(String lockCollectionName) {
 		this.dao.setLockCollectionName(lockCollectionName);
@@ -351,7 +353,7 @@ public class MongoBumblebee implements InitializingBean {
 	}
 
 	/**
-	 * Closes the Mongo instance used by Mongobee. This will close either the connection Mongobee was initiated with or that which was internally created.
+	 * Closes the Mongo instance used by MongoBumblebee. This will close either the connection MongoBumblebee was initiated with or that which was internally created.
 	 */
 	public void close() {
 		dao.close();

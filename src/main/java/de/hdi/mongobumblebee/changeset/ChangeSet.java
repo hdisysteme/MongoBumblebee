@@ -37,7 +37,7 @@ public @interface ChangeSet {
 	public String order();   // must be set
 
 	/**
-	 * Executes the change set on every mongobee's execution, even if it has been run before.
+	 * Executes the change set on every MongoBumblebee's execution, even if it has been run before.
 	 * Optional (default is false)
 	 * @return should run always?
 	 */
