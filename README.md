@@ -1,6 +1,6 @@
 ![MongoBumblebee](https://github.com/hdisysteme/MongoBumblebee/blob/main/misc/mongobumblebee_min.png)
 
-[![Build Status](https://travis-ci.org/mongobumblebee/mongobumblebee.svg?branch=master)](https://travis-ci.org/mongobumblebee/mongobumblebee) [![Coverity Scan Build Status](https://scan.coverity.com/projects/2721/badge.svg)](https://scan.coverity.com/projects/2721) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.hdi/mongobumblebee/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.hdi/mongobumblebee) [![Licence](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/hdisysteme/MongoBumblebee/blob/main/LICENSE)
+[![Build Status](https://github.com/hdisysteme/MongoBumblebee/actions/workflows/maven.yml/badge.svg)](https://travis-ci.org/mongobumblebee/mongobumblebee) [![Coverity Scan Build Status](https://scan.coverity.com/projects/2721/badge.svg)](https://scan.coverity.com/projects/2721) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.hdi/mongobumblebee/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.hdi/mongobumblebee) [![Licence](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/hdisysteme/MongoBumblebee/blob/main/LICENSE)
 ---
 
 
