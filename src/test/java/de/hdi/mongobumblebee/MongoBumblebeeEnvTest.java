@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +20,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-import de.hdi.mongobumblebee.MongoBumblebee;
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.dao.ChangeEntryDao;
 import de.hdi.mongobumblebee.dao.ChangeEntryIndexDao;
 import de.hdi.mongobumblebee.resources.EnvironmentMock;
 import de.hdi.mongobumblebee.test.changelogs.EnvironmentDependentTestResource;
+import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 
 /**
  * Created by lstolowski on 13.07.2017.
@@ -33,7 +34,7 @@ import de.hdi.mongobumblebee.test.changelogs.EnvironmentDependentTestResource;
 class MongoBumblebeeEnvTest {
 
 	@InjectMocks
-	private MongoBumblebee runner = new MongoBumblebee("mongodb://localhost:27017/", MongoBumblebeeTest.DB_NAME);
+	private MongoBumblebee runner = new MongoBumblebee(EmbeddedMongoDBHelper.startMongoClient(), MongoBumblebeeTest.DB_NAME);
 
 	@Mock
 	private ChangeEntryDao dao;
@@ -90,6 +91,11 @@ class MongoBumblebeeEnvTest {
 		// then
 		long change1 = mongoDatabase.getCollection(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME).countDocuments(new Document().append(ChangeEntry.KEY_CHANGEID, "Envtest1").append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(1, change1);
+	}
+	
+	@AfterAll
+	public static void close() {
+		EmbeddedMongoDBHelper.close();
 	}
 
 }

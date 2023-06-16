@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,7 @@ import de.hdi.mongobumblebee.resources.EnvironmentMock;
 import de.hdi.mongobumblebee.test.changelogs.AnotherMongoBumblebeeTestResource;
 import de.hdi.mongobumblebee.test.profiles.def.UnProfiledChangeLog;
 import de.hdi.mongobumblebee.test.profiles.dev.ProfiledDevChangeLog;
+import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 
 /**
  * Tests for Spring profiles integration
@@ -42,7 +44,7 @@ class MongoBumblebeeProfileTest {
 	private static final int CHANGELOG_COUNT = 9;
 
 	@InjectMocks
-	private MongoBumblebee runner = new MongoBumblebee("mongodb://localhost:27017/", MongoBumblebeeTest.DB_NAME);
+	private MongoBumblebee runner = new MongoBumblebee(EmbeddedMongoDBHelper.startMongoClient(), MongoBumblebeeTest.DB_NAME);
 
 	@Mock
 	private ChangeEntryDao dao;
@@ -209,6 +211,11 @@ class MongoBumblebeeProfileTest {
 		// then
 		long changes = mongoDatabase.getCollection(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME).countDocuments(new Document());
 		assertEquals(CHANGELOG_COUNT, changes);
+	}
+	
+	@AfterAll
+	public static void close() {
+		EmbeddedMongoDBHelper.close();
 	}
 
 }

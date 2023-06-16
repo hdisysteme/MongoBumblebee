@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import java.net.UnknownHostException;
 
 import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,7 @@ import de.hdi.mongobumblebee.dao.ChangeEntryIndexDao;
 import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
 import de.hdi.mongobumblebee.exception.MongoBumblebeeException;
 import de.hdi.mongobumblebee.test.changelogs.MongoBumblebeeTestResource;
+import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 
 @ExtendWith(MockitoExtension.class)
 public class MongoBumblebeeTest {
@@ -46,7 +48,7 @@ public class MongoBumblebeeTest {
 	public static final String LOCK_COLLECTION_NAME = "lock";
 
 	@InjectMocks
-	private MongoBumblebee runner = new MongoBumblebee("mongodb://localhost:27017/", MongoBumblebeeTest.DB_NAME);
+	private MongoBumblebee runner = new MongoBumblebee(EmbeddedMongoDBHelper.startMongoClient(), MongoBumblebeeTest.DB_NAME);
 
 	@Mock
 	private ChangeEntryDao dao;
@@ -74,7 +76,7 @@ public class MongoBumblebeeTest {
 
 	@Test
 	void shouldThrowAnExceptionIfNoDbNameSet() throws Exception {
-		MongoBumblebee runner = new MongoBumblebee("mongodb://localhost:27017/", "");
+		MongoBumblebee runner = new MongoBumblebee(EmbeddedMongoDBHelper.startMongoClient(), "");
 		runner.setEnabled(true);
 		runner.setChangeLogsScanPackage(MongoBumblebeeTestResource.class.getPackage().getName());
 		assertThrows(MongoBumblebeeConfigurationException.class, () -> runner.execute());
@@ -205,7 +207,11 @@ public class MongoBumblebeeTest {
 		}
 		// then
 		verify(dao).releaseProcessLock();
-
+	}
+	
+	@AfterAll
+	public static void close() {
+		EmbeddedMongoDBHelper.close();
 	}
 
 }

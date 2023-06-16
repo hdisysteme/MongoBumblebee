@@ -42,7 +42,7 @@ public class MongoBumblebee implements InitializingBean {
 	public static final boolean DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK = false;
 	
 	private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = MB_PREFIX + "changelog";
-	private static final String DEFAULT_LOCK_COLLECTION_NAME = MB_PREFIX + "mbblock";
+	private static final String DEFAULT_LOCK_COLLECTION_NAME = MB_PREFIX + "lock";
 	
 	@Autowired(required = false)
 	private ApplicationContext applicationContext;
