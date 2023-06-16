@@ -24,7 +24,7 @@ public class ChangeEntry {
 	public static final String KEY_TIMESTAMP = "timestamp";
 	public static final String KEY_CHANGELOGCLASS = "changeLogClass";
 	public static final String KEY_CHANGESETMETHOD = "changeSetMethod";
-	public static final String KEY_RESULT = "result";
+	public static final String KEY_METHODRETURN = "methodreturn";
 
 	private String changeId;
 	private String author;

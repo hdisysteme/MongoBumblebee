@@ -34,15 +34,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MongoBumblebee implements InitializingBean {
 	
+	public static final String MB_PREFIX = "mbb";
+	
+	public static final boolean DEFAULT_WAIT_FOR_LOCK = false;
+	public static final long DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME = 5L;
+	public static final long DEFAULT_CHANGE_LOG_LOCK_POLL_RATE = 10L;
+	public static final boolean DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK = false;
+	
+	private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = MB_PREFIX + "changelog";
+	private static final String DEFAULT_LOCK_COLLECTION_NAME = MB_PREFIX + "mbblock";
+	
 	@Autowired(required = false)
 	private ApplicationContext applicationContext;
-	
-	private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "mbbchangelog";
-	private static final String DEFAULT_LOCK_COLLECTION_NAME = "mbblock";
-	private static final boolean DEFAULT_WAIT_FOR_LOCK = false;
-	private static final long DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME = 5L;
-	private static final long DEFAULT_CHANGE_LOG_LOCK_POLL_RATE = 10L;
-	private static final boolean DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK = false;
 
 	private ChangeEntryDao dao;
 	private boolean enabled = true;

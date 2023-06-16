@@ -7,6 +7,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 
+import de.hdi.mongobumblebee.MongoBumblebee;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,6 +22,7 @@ public class LockDao {
 	private static final int INDEX_SORT_ASC = 1;
 
 	private static final String LOCK_ENTRY_KEY_VAL = "LOCK";
+	
 	private String lockCollectionName;
 
 	public LockDao(String lockCollectionName) {
@@ -33,7 +35,7 @@ public class LockDao {
 
 	private void createCollectionAndUniqueIndexIfNotExists(MongoDatabase db) {
 		Document indexKeys = new Document(KEY_PROP_NAME, INDEX_SORT_ASC);
-		IndexOptions indexOptions = new IndexOptions().unique(true).name("mongobumblebeelock_key_idx");
+		IndexOptions indexOptions = new IndexOptions().unique(true).name(MongoBumblebee.MB_PREFIX + "lock_key_idx");
 
 		db.getCollection(lockCollectionName).createIndex(indexKeys, indexOptions);
 	}
