@@ -1,5 +1,8 @@
 package de.hdi.mongobumblebee.dao;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.bson.Document;
 
 import com.mongodb.ErrorCategory;
@@ -19,9 +22,9 @@ public class LockDao {
 	
 	private static final String KEY_PROP_NAME = "key";
 
-	private static final int INDEX_SORT_ASC = 1;
-
 	private static final String LOCK_ENTRY_KEY_VAL = "LOCK";
+	
+	private static final int INDEX_SORT_ASC = 1;
 	
 	private String lockCollectionName;
 
@@ -42,7 +45,9 @@ public class LockDao {
 
 	public boolean acquireLock(MongoDatabase db) {
 
-		Document insertObj = new Document(KEY_PROP_NAME, LOCK_ENTRY_KEY_VAL).append("status", "LOCK_HELD");
+		Document insertObj = new Document(KEY_PROP_NAME, LOCK_ENTRY_KEY_VAL)
+				.append("status", "LOCK_HELD")
+				.append("aquired", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
 		// acquire lock by attempting to insert the same value in the collection - if it already exists (i.e. lock held)
 		// there will be an exception

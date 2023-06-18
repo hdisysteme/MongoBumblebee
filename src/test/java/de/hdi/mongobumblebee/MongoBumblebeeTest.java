@@ -60,7 +60,7 @@ public class MongoBumblebeeTest {
 
 	@BeforeEach
 	void init() throws MongoBumblebeeException, UnknownHostException {
-		MongoClient mongoClient = MongoClients.create();
+		MongoClient mongoClient = EmbeddedMongoDBHelper.startMongoClient();
 		mongoDatabase = mongoClient.getDatabase(DB_NAME);
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, DB_NAME);
 		mongoTemplate.dropCollection(CHANGELOG_COLLECTION_NAME);

@@ -7,11 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 import de.hdi.mongobumblebee.MongoBumblebeeTest;
-import de.hdi.mongobumblebee.dao.LockDao;
+import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 
 /**
  * @author colsson11
@@ -30,7 +29,7 @@ class LockDaoTest {
 	void shouldGetLockWhenNotPreviouslyHeld() throws Exception {
 
 		// given
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		// when
@@ -44,7 +43,7 @@ class LockDaoTest {
 	void shouldNotGetLockWhenPreviouslyHeld() throws Exception {
 
 		// given
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		// when
@@ -59,7 +58,7 @@ class LockDaoTest {
 	void shouldGetLockWhenPreviouslyHeldAndReleased() throws Exception {
 
 		// given
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		// when
@@ -75,7 +74,7 @@ class LockDaoTest {
 	void releaseLockShouldBeIdempotent() {
 
 		// given
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		// when
@@ -90,7 +89,7 @@ class LockDaoTest {
 	@Test
 	void whenLockNotHeldCheckReturnsFalse() {
 		
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		assertFalse(dao.isLockHeld(db));
@@ -99,7 +98,7 @@ class LockDaoTest {
 	@Test
 	void whenLockHeldCheckReturnsTrue() {
 
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		dao.acquireLock(db);
@@ -110,7 +109,7 @@ class LockDaoTest {
 	@AfterEach
 	void cleanup() {
 		
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		LockDao dao = createDao(db);
 
 		dao.releaseLock(db);

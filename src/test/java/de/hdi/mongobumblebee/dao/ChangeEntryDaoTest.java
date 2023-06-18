@@ -13,7 +13,6 @@ import org.bson.Document;
 import org.junit.jupiter.api.Test;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -21,6 +20,7 @@ import de.hdi.mongobumblebee.MongoBumblebee;
 import de.hdi.mongobumblebee.MongoBumblebeeTest;
 import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
 import de.hdi.mongobumblebee.exception.MongoBumblebeeLockException;
+import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 
 /**
  * @author lstolowski
@@ -36,7 +36,7 @@ class ChangeEntryDaoTest {
 				MongoBumblebee.DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME, MongoBumblebee.DEFAULT_CHANGE_LOG_LOCK_POLL_RATE, MongoBumblebee.DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK);
 
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
@@ -58,7 +58,7 @@ class ChangeEntryDaoTest {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
@@ -82,7 +82,7 @@ class ChangeEntryDaoTest {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
@@ -106,7 +106,7 @@ class ChangeEntryDaoTest {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
@@ -130,7 +130,7 @@ class ChangeEntryDaoTest {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
@@ -153,7 +153,7 @@ class ChangeEntryDaoTest {
 	void shouldWaitForLockIfWaitForLockIsTrue() throws Exception {
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, true,
@@ -177,7 +177,7 @@ class ChangeEntryDaoTest {
 	void shouldThrowLockExceptionIfThrowExceptionIsTrue() throws Exception {
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
@@ -197,7 +197,7 @@ class ChangeEntryDaoTest {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
@@ -220,7 +220,7 @@ class ChangeEntryDaoTest {
 
 		// given
 		MongoClient mongoClient = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,

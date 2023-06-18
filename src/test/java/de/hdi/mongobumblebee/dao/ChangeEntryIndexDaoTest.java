@@ -11,12 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 import de.hdi.mongobumblebee.MongoBumblebeeTest;
-import de.hdi.mongobumblebee.dao.ChangeEntryIndexDao;
+import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 
 /**
  * @author lstolowski
@@ -32,7 +31,7 @@ class ChangeEntryIndexDaoTest {
 	void shouldCreateRequiredUniqueIndex() {
 		// given
 		MongoClient mongo = mock(MongoClient.class);
-		MongoDatabase db = MongoClients.create().getDatabase(MongoBumblebeeTest.DB_NAME);
+		MongoDatabase db = EmbeddedMongoDBHelper.startMongoClient().getDatabase(MongoBumblebeeTest.DB_NAME);
 		when(mongo.getDatabase(Mockito.anyString())).thenReturn(db);
 
 		// when

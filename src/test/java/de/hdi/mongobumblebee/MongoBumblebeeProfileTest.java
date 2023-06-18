@@ -57,7 +57,7 @@ class MongoBumblebeeProfileTest {
 	@BeforeEach
 	void init() throws Exception {
 
-		MongoClient mongoClient = MongoClients.create();
+		MongoClient mongoClient = EmbeddedMongoDBHelper.startMongoClient();
 		mongoDatabase = mongoClient.getDatabase(MongoBumblebeeTest.DB_NAME);
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, MongoBumblebeeTest.DB_NAME);
 		mongoTemplate.dropCollection(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME);
