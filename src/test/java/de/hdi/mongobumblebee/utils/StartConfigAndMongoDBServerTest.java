@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mongodb.client.MongoClient;
 
-public class StartConfigAndMongoDBServerTest {
+class StartConfigAndMongoDBServerTest {
 	
 	@Test
 	void testMongoClient1() {
