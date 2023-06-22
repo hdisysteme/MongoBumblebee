@@ -22,12 +22,12 @@ With Maven
 <dependency>
   <groupId>de.hdi</groupId>
   <artifactId>mongobumblebee</artifactId>
-  <version>0.1</version>
+  <version>1.0</version>
 </dependency>
 ```
 With Gradle
 ```groovy
-compile 'de.hdi:mongobumblebee:0.1'
+compile 'de.hdi:mongobumblebee:1.0'
 ```
 
 ### Usage with Spring
