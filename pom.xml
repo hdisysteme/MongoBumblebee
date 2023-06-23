@@ -37,6 +37,12 @@
             <id>blafoo</id>
             <name>blafoo</name>
         </developer>
+	<developer>
+            <name>Mark Stehr</name>
+            <email>mark.stehr@hdi.de</email>
+            <organization>HDI Systeme AG</organization>
+            <organizationUrl>https://github.com/hdisysteme</organizationUrl>
+        </developer>
     </developers>
 
     <distributionManagement>
