@@ -59,12 +59,13 @@ public class MongoBumblebee implements InitializingBean {
 	 * Constructor takes MongoClient object as a parameter.
 	 * </p>
 	 * <p>
-	 * For more details about <tt>MongoClient</tt> please see com.mongodb.client.MongoClient docs
+	 * For more details about <code>MongoClient</code> please see com.mongodb.client.MongoClient docs
 	 * </p>
 	 *
 	 * @param mongoClient
 	 *            database connection client
-	 * @throws MongoBumblebeeConfigurationException 
+	 * @param dbName
+	 * 			  Database name          
 	 * @see MongoClient
 	 */
 	public MongoBumblebee(@NonNull MongoClient mongoClient, @NonNull String dbName) {
@@ -99,8 +100,6 @@ public class MongoBumblebee implements InitializingBean {
 	 *
 	 * @param mongoURI
 	 *            with correct format
-	 * @throws MongoBumblebeeConfigurationException 
-	 * @see com.mongodb.MongoClientURI
 	 */
 
 	public MongoBumblebee(@NonNull String mongoURI, @NonNull String dbName) {
