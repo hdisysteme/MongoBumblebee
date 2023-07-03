@@ -25,7 +25,7 @@ class ChangeEntryIndexDaoTest {
 	
 	private static final String CHANGEID_AUTHOR_INDEX_NAME = "changeId_1_author_1";
 
-	private ChangeEntryIndexDao dao = new ChangeEntryIndexDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME);
+	private ChangeEntryIndexDao dao = new ChangeEntryIndexDao();
 
 	@Test
 	void shouldCreateRequiredUniqueIndex() {

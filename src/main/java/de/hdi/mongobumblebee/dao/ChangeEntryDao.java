@@ -45,7 +45,7 @@ public class ChangeEntryDao {
 
 	public ChangeEntryDao(String changelogCollectionName, String lockCollectionName, boolean waitForLock, long changeLogLockWaitTime,
 			long changeLogLockPollRate, boolean throwExceptionIfCannotObtainLock) {
-		this.indexDao = new ChangeEntryIndexDao(changelogCollectionName);
+		this.indexDao = new ChangeEntryIndexDao();
 		this.lockDao = new LockDao(lockCollectionName);
 		this.changelogCollectionName = changelogCollectionName;
 		this.waitForLock = waitForLock;
@@ -137,7 +137,7 @@ public class ChangeEntryDao {
 	}
 
 	private void ensureChangeLogCollectionIndex(MongoCollection<Document> collection) {
-		Document index = indexDao.findRequiredChangeAndAuthorIndex(mongoDatabase);
+		Document index = indexDao.findRequiredChangeAndAuthorIndex(collection);
 		if (index == null) {
 			indexDao.createRequiredUniqueIndex(collection);
 			log.debug("Index in collection " + changelogCollectionName + " was created");
@@ -166,7 +166,6 @@ public class ChangeEntryDao {
 	}
 
 	public void setChangelogCollectionName(String changelogCollectionName) {
-		this.indexDao.setChangelogCollectionName(changelogCollectionName);
 		this.changelogCollectionName = changelogCollectionName;
 	}
 

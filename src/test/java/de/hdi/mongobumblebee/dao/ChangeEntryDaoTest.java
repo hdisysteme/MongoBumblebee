@@ -41,7 +41,7 @@ class ChangeEntryDaoTest {
 		when(mongoClient.getDatabase(anyString())).thenReturn(db);
 
 		ChangeEntryIndexDao indexDaoMock = mock(ChangeEntryIndexDao.class);
-		when(indexDaoMock.findRequiredChangeAndAuthorIndex(db)).thenReturn(null);
+		when(indexDaoMock.findRequiredChangeAndAuthorIndex(any(MongoCollection.class))).thenReturn(null);
 		dao.setIndexDao(indexDaoMock);
 
 		// when
@@ -64,7 +64,7 @@ class ChangeEntryDaoTest {
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
 				MongoBumblebee.DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME, MongoBumblebee.DEFAULT_CHANGE_LOG_LOCK_POLL_RATE, MongoBumblebee.DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK);
 		ChangeEntryIndexDao indexDaoMock = mock(ChangeEntryIndexDao.class);
-		when(indexDaoMock.findRequiredChangeAndAuthorIndex(db)).thenReturn(new Document());
+		when(indexDaoMock.findRequiredChangeAndAuthorIndex(any(MongoCollection.class))).thenReturn(new Document());
 		when(indexDaoMock.isUnique(any(Document.class))).thenReturn(true);
 		dao.setIndexDao(indexDaoMock);
 
@@ -88,7 +88,7 @@ class ChangeEntryDaoTest {
 		ChangeEntryDao dao = new ChangeEntryDao(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME, MongoBumblebeeTest.LOCK_COLLECTION_NAME, MongoBumblebee.DEFAULT_WAIT_FOR_LOCK,
 				MongoBumblebee.DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME, MongoBumblebee.DEFAULT_CHANGE_LOG_LOCK_POLL_RATE, MongoBumblebee.DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK);
 		ChangeEntryIndexDao indexDaoMock = mock(ChangeEntryIndexDao.class);
-		when(indexDaoMock.findRequiredChangeAndAuthorIndex(db)).thenReturn(new Document());
+		when(indexDaoMock.findRequiredChangeAndAuthorIndex(any(MongoCollection.class))).thenReturn(new Document());
 		when(indexDaoMock.isUnique(any(Document.class))).thenReturn(false);
 		dao.setIndexDao(indexDaoMock);
 
