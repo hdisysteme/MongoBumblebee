@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
@@ -50,7 +51,12 @@ public class ChangeService {
 	}
 
 	public List<Class<?>> fetchChangeLogs() {
-		Reflections reflections = new Reflections(changeLogsBasePackage);
+		// Workaround for https://github.com/ronmamo/reflections/issues/373 ([0.10.2] Reflections does not detect any classes, 
+		// if base class (or package prefix) is passed as argument, and application is running as a jar) 
+		ConfigurationBuilder configuration = new ConfigurationBuilder()
+				.forPackages(changeLogsBasePackage)
+				.setInputsFilter(s -> s.startsWith(changeLogsBasePackage));
+		Reflections reflections = new Reflections(configuration);
 		Set<Class<?>> changeLogs = reflections.getTypesAnnotatedWith(ChangeLog.class);
 		List<Class<?>> filteredChangeLogs = (List<Class<?>>) filterByActiveProfiles(changeLogs);
 
