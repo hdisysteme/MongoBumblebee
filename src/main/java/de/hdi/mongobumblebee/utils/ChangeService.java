@@ -55,7 +55,7 @@ public class ChangeService {
 		// if base class (or package prefix) is passed as argument, and application is running as a jar) 
 		ConfigurationBuilder configuration = new ConfigurationBuilder()
 				.forPackages(changeLogsBasePackage)
-				.setInputsFilter(s -> s.startsWith(changeLogsBasePackage));
+				.setInputsFilter(s -> s.contains(changeLogsBasePackage));
 		Reflections reflections = new Reflections(configuration);
 		Set<Class<?>> changeLogs = reflections.getTypesAnnotatedWith(ChangeLog.class);
 		List<Class<?>> filteredChangeLogs = (List<Class<?>>) filterByActiveProfiles(changeLogs);
