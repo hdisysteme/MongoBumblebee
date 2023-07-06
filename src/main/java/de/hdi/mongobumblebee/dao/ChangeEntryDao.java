@@ -5,10 +5,12 @@ import static org.springframework.util.StringUtils.hasText;
 import java.util.Date;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.exception.MongoBumblebeeConfigurationException;
@@ -124,9 +126,13 @@ public class ChangeEntryDao {
 	public void save(ChangeEntry changeEntry) throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 
-		MongoCollection<Document> mongoBumblebeeLog = getMongoDatabase().getCollection(changelogCollectionName);
-
-		mongoBumblebeeLog.insertOne(changeEntry.buildFullDBObject());
+		if (isNewChange(changeEntry)) {
+            		changeLogCollection.insertOne(changeEntry.buildFullDBObject());
+		} else {
+			Bson filter = Filters.and(Filters.eq(ChangeEntry.KEY_CHANGEID, changeEntry.getChangeId()), Filters.eq(ChangeEntry.KEY_AUTHOR, changeEntry.getAuthor()));
+            		var document = changeEntry.buildFullDBObject();
+			changeLogCollection.findOneAndReplace(filter, document);
+        	}
 	}
 
 	private void verifyDbConnection() throws MongoBumblebeeConnectionException {
