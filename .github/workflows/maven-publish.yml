@@ -37,8 +37,7 @@ jobs:
           git commit -m "updating version to ${{ github.event.inputs.version }} in pom"
           git tag -f -a v${{ github.event.inputs.version }} -m "tagging version ${{ github.event.inputs.version }}"
           git push -f --tags
-          echo "WTF | ,${{ secrets.GPG_PASSPHRASE }}, ,${{secrets.GPG_PASSPHRASE}},"
-          mvn --batch-mode deploy -DskipTests -Dgpg.passphrase=WTF -Ppublish
+          mvn --batch-mode deploy -Ppublish
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
