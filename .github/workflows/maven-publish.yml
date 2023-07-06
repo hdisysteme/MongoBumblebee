@@ -23,10 +23,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_USERNAME }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           
       - name: debug
         run: echo "Hello ,$OSSRH_USERNAME, ,$server-username, My API_KEY is ${{secrets.GPG_TEST}}"
@@ -40,11 +40,7 @@ jobs:
           git commit -m "updating version to ${{ github.event.inputs.version }} in pom"
           git tag -f -a v${{ github.event.inputs.version }} -m "tagging version ${{ github.event.inputs.version }}"
           git push -f --tags
-          mvn --batch-mode deploy -DskipTests -Ppublish
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          mvn --batch-mode deploy -DskipTests -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \ -Ppublish
 
       - name: Create Release
         id: create_release
