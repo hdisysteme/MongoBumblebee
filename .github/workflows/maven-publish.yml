@@ -30,8 +30,8 @@ jobs:
 
       - name: Create tag and publish to the Maven Central Repository
         run: |
-          echo ${{ secrets.GPG_TEST }}
-          echo mvn --batch-mode versions:set -DnewVersion=${{ github.event.inputs.version }} -Dgpg.passphrase=WTF
+          echo START! ${{ secrets.GPG_TEST }}
+          mvn --batch-mode versions:set -DnewVersion=${{ github.event.inputs.version }} -Dgpg.passphrase=WTF
           git config --global user.email "bob@hdi.de"
           git config --global user.name "Bob the Builder"
           git add pom.xml
