@@ -29,7 +29,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           
       - name: debug
-        run: echo "Hello $OSSRH_USERNAME. $BUILD. My API_KEY is ${{secrets.GPG_TEST}}"
+        run: echo "Hello ,$OSSRH_USERNAME, ,$server-username, My API_KEY is ${{secrets.GPG_TEST}}"
 
       - name: Create tag and publish to the Maven Central Repository
         run: |
