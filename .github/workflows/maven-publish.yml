@@ -28,9 +28,6 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
           
-      - name: debug
-        run: echo "Hello ,$OSSRH_USERNAME, ,$server-username, My API_KEY is ${{secrets.GPG_TEST}}"
-
       - name: Create tag and publish to the Maven Central Repository
         run: |
           mvn --batch-mode versions:set -DnewVersion=${{ github.event.inputs.version }}
@@ -40,7 +37,8 @@ jobs:
           git commit -m "updating version to ${{ github.event.inputs.version }} in pom"
           git tag -f -a v${{ github.event.inputs.version }} -m "tagging version ${{ github.event.inputs.version }}"
           git push -f --tags
-          mvn --batch-mode deploy -DskipTests -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} -Ppublish
+          echo "WTF | ,${{ secrets.GPG_PASSPHRASE }}, ,${{secrets.GPG_PASSPHRASE}},"
+          mvn --batch-mode deploy -DskipTests -Dgpg.passphrase=WTF -Ppublish
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
