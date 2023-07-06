@@ -117,8 +117,8 @@ public class ChangeEntryDao {
 	public boolean isNewChange(ChangeEntry changeEntry) throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 
-		MongoCollection<Document> mongoBumblebeeChangeLog = getMongoDatabase().getCollection(changelogCollectionName);
-		Document entry = mongoBumblebeeChangeLog.find(changeEntry.buildSearchQueryDBObject()).first();
+		MongoCollection<Document> changeLogCollection = getMongoDatabase().getCollection(changelogCollectionName);
+		Document entry = changeLogCollection.find(changeEntry.buildSearchQueryDBObject()).first();
 
 		return entry == null;
 	}
@@ -126,13 +126,15 @@ public class ChangeEntryDao {
 	public void save(ChangeEntry changeEntry) throws MongoBumblebeeConnectionException {
 		verifyDbConnection();
 
+		MongoCollection<Document> changeLogCollection = getMongoDatabase().getCollection(changelogCollectionName);
+
 		if (isNewChange(changeEntry)) {
-            		changeLogCollection.insertOne(changeEntry.buildFullDBObject());
+			changeLogCollection.insertOne(changeEntry.buildFullDBObject());
 		} else {
 			Bson filter = Filters.and(Filters.eq(ChangeEntry.KEY_CHANGEID, changeEntry.getChangeId()), Filters.eq(ChangeEntry.KEY_AUTHOR, changeEntry.getAuthor()));
-            		var document = changeEntry.buildFullDBObject();
+			var document = changeEntry.buildFullDBObject();
 			changeLogCollection.findOneAndReplace(filter, document);
-        	}
+		}
 	}
 
 	private void verifyDbConnection() throws MongoBumblebeeConnectionException {
