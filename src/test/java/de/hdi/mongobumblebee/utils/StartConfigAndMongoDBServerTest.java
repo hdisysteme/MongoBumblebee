@@ -25,7 +25,7 @@ class StartConfigAndMongoDBServerTest {
 		
 		Set<String> databases = new HashSet<>();
 		mongoClient.listDatabaseNames().into(databases);
-		assertTrue(databases.containsAll(Set.of("admin","config","local")));
+		assertTrue(databases.containsAll(Set.of("test", "admin", "local")));
 	}
 	
 	@Test
@@ -36,7 +36,7 @@ class StartConfigAndMongoDBServerTest {
 		
 		Set<String> databases = new HashSet<>();
 		mongoClient.listDatabaseNames().into(databases);
-		assertTrue(databases.containsAll(Set.of("admin","config","local")));
+		assertTrue(databases.containsAll(Set.of("test", "admin", "local")));
 	}
 	
 	@AfterAll
