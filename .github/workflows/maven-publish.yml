@@ -23,19 +23,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
-      - name: Install gpg secret key
-        id: install-secret-key
-        run: |
-          echo -e "Secret: '${{ secrets.GPG_PRIVATE_KEY }}'"
-          # Install gpg secret key
-          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
-          # Verify gpg secret key
-          gpg --list-secret-keys --keyid-format LONG
           
       - name: Create tag and publish to the Maven Central Repository
         run: |
@@ -46,10 +37,10 @@ jobs:
           git commit -m "updating version to ${{ github.event.inputs.version }} in pom"
           git tag -f -a v${{ github.event.inputs.version }} -m "tagging version ${{ github.event.inputs.version }}"
           git push -f --tags
-          mvn --batch-mode deploy -Ppublish -Dgpg.passphrase=$MAVEN_GPG_PASSPHRASE
+          mvn --batch-mode deploy -Ppublish
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           
       - name: Create Release
