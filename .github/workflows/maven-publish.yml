@@ -31,6 +31,7 @@ jobs:
       - name: Install gpg secret key
         id: install-secret-key
         run: |
+          echo -e "Secret: '${{ secrets.ABCD }}'"
           # Install gpg secret key
           cat <(echo -e "${{ secrets.ABCD }}") | gpg --batch --import
           # Verify gpg secret key
