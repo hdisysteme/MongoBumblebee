@@ -32,9 +32,11 @@ jobs:
         id: install-secret-key
         run: |
           # Install gpg secret key
-          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
+          cat <(echo -e "$gpg-private-key") | gpg --batch --import
           # Verify gpg secret key
           gpg --list-secret-keys --keyid-format LONG
+        env:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           
       - name: Create tag and publish to the Maven Central Repository
         run: |
@@ -50,7 +52,6 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           
       - name: Create Release
         id: create_release
