@@ -17,7 +17,6 @@ import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.exception.MongoBumblebeeChangeSetException;
 import de.hdi.mongobumblebee.test.changelogs.AnotherMongoBumblebeeTestResource;
 import de.hdi.mongobumblebee.test.changelogs.MongoBumblebeeTestResource;
-import de.hdi.mongobumblebee.utils.ChangeService;
 
 /**
  * @author lstolowski
