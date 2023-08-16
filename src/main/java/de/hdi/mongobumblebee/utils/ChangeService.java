@@ -58,7 +58,7 @@ public class ChangeService {
 				.setInputsFilter(s -> s.contains(changeLogsBasePackage));
 		Reflections reflections = new Reflections(configuration);
 		Set<Class<?>> changeLogs = reflections.getTypesAnnotatedWith(ChangeLog.class);
-		List<Class<?>> filteredChangeLogs = (List<Class<?>>) filterByActiveProfiles(changeLogs);
+		List<Class<?>> filteredChangeLogs = filterByActiveProfiles(changeLogs);
 
 		Collections.sort(filteredChangeLogs, new ChangeLogComparator());
 
@@ -67,7 +67,7 @@ public class ChangeService {
 
 	public List<Method> fetchChangeSets(final Class<?> type) throws MongoBumblebeeChangeSetException {
 		final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
-		final List<Method> filteredChangeSets = (List<Method>) filterByActiveProfiles(changeSets);
+		final List<Method> filteredChangeSets = filterByActiveProfiles(changeSets);
 
 		Collections.sort(filteredChangeSets, new ChangeSetComparator());
 
@@ -119,11 +119,11 @@ public class ChangeService {
 		return false;
 	}
 
-	private List<?> filterByActiveProfiles(Collection<? extends AnnotatedElement> annotated) {
-		List<AnnotatedElement> filtered = new ArrayList<>();
-		for (AnnotatedElement element : annotated) {
+	private <T extends AnnotatedElement> List<T> filterByActiveProfiles(Collection<T> annotated) {
+		List<T> filtered = new ArrayList<>();
+		for (T element : annotated) {
 			if (matchesActiveSpringProfile(element)){
-				filtered.add( element);
+				filtered.add(element);
 			}
 		}
 		return filtered;
