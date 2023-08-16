@@ -11,7 +11,7 @@
 
 	<groupId>de.hdi</groupId>
 	<artifactId>mongobumblebee</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<properties>
 		<java.version>17</java.version>
@@ -29,8 +29,7 @@
 
 	<scm>
 		<connection>scm:git:git@github.com/hdisysteme/MongoBumblebee.git</connection>
-		<developerConnection>
-			scm:git:git@github.com/hdisysteme/MongoBumblebee.git</developerConnection>
+		<developerConnection>scm:git:git@github.com/hdisysteme/MongoBumblebee.git</developerConnection>
 		<url>git@github.com/hdisysteme/MongoBumblebee.git</url>
 		<tag>mongobumblebee-tag</tag>
 	</scm>
@@ -49,12 +48,15 @@
 	</developers>
 
 	<distributionManagement>
-		<repository>
-			<id>ossrh</id>
-			<name>Central Repository OSSRH</name>
-			<url>
-				https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
+		<snapshotRepository>
+    		<id>ossrh</id>
+    			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+  		</snapshotRepository>
+  		<repository>
+    		<id>ossrh</id>
+    		<name>Central Repository OSSRH</name>
+    		<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+  		</repository>
 	</distributionManagement>
 
 	<dependencies>
@@ -110,7 +112,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
 				<configuration>
 					<source>17</source>
 					<target>17</target>
@@ -135,7 +136,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.0.1</version>
 						<configuration>
 							<passphraseServerId>gpg.passphrase</passphraseServerId>
 							<gpgArguments>
@@ -156,7 +156,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>3.2.1</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -169,7 +168,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.4.1</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
