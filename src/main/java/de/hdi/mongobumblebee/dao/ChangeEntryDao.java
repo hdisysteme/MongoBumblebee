@@ -2,6 +2,7 @@ package de.hdi.mongobumblebee.dao;
 
 import static org.springframework.util.StringUtils.hasText;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.bson.Document;
@@ -86,7 +87,7 @@ public class ChangeEntryDao {
 			while (!acquired && new Date().getTime() < timeToGiveUp) {
 				acquired = lockDao.acquireLock(getMongoDatabase());
 				if (!acquired) {
-					log.info("Waiting for changelog lock....");
+					log.info("Waiting for process lock....");
 					try {
 						Thread.sleep(changeLogLockPollRate * 1000);
 					} catch (InterruptedException e) {
@@ -95,6 +96,13 @@ public class ChangeEntryDao {
 				}
 			}
 		}
+		
+		LocalDateTime lastAccess = lockDao.getLastAccess(getMongoDatabase());
+		if (!acquired && lastAccess != null && lastAccess.plusMinutes(changeLogLockWaitTime).isBefore(LocalDateTime.now())) {
+			log.info("Process lock released because it wasn't updated for " + changeLogLockWaitTime + " minutes.");
+			lockDao.releaseLock(getMongoDatabase());
+			acquired = lockDao.acquireLock(getMongoDatabase());
+		}
 
 		if (!acquired && throwExceptionIfCannotObtainLock) {
 			log.info("MongoBumblebee did not acquire process lock. Throwing exception.");
@@ -102,6 +110,10 @@ public class ChangeEntryDao {
 		}
 
 		return acquired;
+	}
+	
+	public void updateLock() {
+		lockDao.updateLock(getMongoDatabase());
 	}
 
 	public void releaseProcessLock() throws MongoBumblebeeConnectionException {

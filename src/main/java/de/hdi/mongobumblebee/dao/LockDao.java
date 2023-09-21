@@ -1,14 +1,16 @@
 package de.hdi.mongobumblebee.dao;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Updates;
 
 import de.hdi.mongobumblebee.MongoBumblebee;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +49,7 @@ public class LockDao {
 
 		Document insertObj = new Document(KEY_PROP_NAME, LOCK_ENTRY_KEY_VAL)
 				.append("status", "LOCK_HELD")
-				.append("aquired", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+				.append("lastAccess", LocalDateTime.now());
 
 		// acquire lock by attempting to insert the same value in the collection - if it already exists (i.e. lock held)
 		// there will be an exception
@@ -55,11 +57,20 @@ public class LockDao {
 			db.getCollection(lockCollectionName).insertOne(insertObj);
 		} catch (MongoWriteException ex) {
 			if (ex.getError().getCategory() == ErrorCategory.DUPLICATE_KEY) {
-				log.warn("Duplicate key exception while acquireLock. Probably the lock has been already acquired.");
+				log.warn("Duplicate key exception while acquireLock. Probably the lock has been already acquired by another process.");
 			}
 			return false;
 		}
 		return true;
+	}
+	
+	public void updateLock(MongoDatabase db) {
+		Bson filter = Filters.eq("status", "LOCK_HELD");
+		Bson update = Updates.set("lastAccess", LocalDateTime.now());
+		
+		var result = db.getCollection(lockCollectionName).updateOne(filter, update);
+		if ( result.getModifiedCount() != 1 )
+			log.warn("Lock couldn't be updated");
 	}
 
 	public void releaseLock(MongoDatabase db) {
@@ -76,6 +87,18 @@ public class LockDao {
 	public boolean isLockHeld(MongoDatabase db) {
 		return db.getCollection(lockCollectionName).countDocuments() == 1;
 	}
+	
+	/**
+	 * Return the date and time the lock has been the last time updated or the creation time
+	 * 
+	 * @param db MongoDatabase object
+	 * @return last access time or null if no lock exisits
+	 */
+	public LocalDateTime getLastAccess(MongoDatabase db) {
+		Document doc = db.getCollection(lockCollectionName).find().first();
+		return doc != null ? doc.get("lastAccess", LocalDateTime.class) : null;
+	}
+
 
 	public void setLockCollectionName(String lockCollectionName) {
 		this.lockCollectionName = lockCollectionName;

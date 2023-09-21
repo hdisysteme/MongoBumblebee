@@ -39,7 +39,9 @@ public class MongoBumblebee implements InitializingBean {
 	public static final String MB_PREFIX = "mbb";
 	
 	public static final boolean DEFAULT_WAIT_FOR_LOCK = false;
+	/** Waiting time (in minutes) */
 	public static final long DEFAULT_CHANGE_LOG_LOCK_WAIT_TIME = 5L;
+	/** Time between two polls to aquire the lock (in seconds) */
 	public static final long DEFAULT_CHANGE_LOG_LOCK_POLL_RATE = 10L;
 	public static final boolean DEFAULT_THROW_EXCEPTION_IF_CANNOT_OBTAIN_LOCK = false;
 	
@@ -193,6 +195,7 @@ public class MongoBumblebee implements InitializingBean {
 						} else {
 							log.info(changeEntry + " passed over");
 						}
+						dao.updateLock();
 					} catch (MongoBumblebeeChangeSetException e) {
 						log.error(e.getMessage());
 					}
