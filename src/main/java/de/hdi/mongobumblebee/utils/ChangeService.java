@@ -37,7 +37,7 @@ public class ChangeService {
 	private final List<String> activeProfiles;
 
 	public ChangeService(String changeLogsBasePackage) {
-		this(changeLogsBasePackage, null);
+		this(changeLogsBasePackage, List.of(DEFAULT_PROFILE));
 	}
 
 	public ChangeService(String changeLogsBasePackage, @NonNull List<String> activeProfiles) {

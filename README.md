@@ -198,7 +198,8 @@ public MongoBumblebee mongobumblebee(@Autowired Environment environment) {
 
 ## Release notes
 
-1.1 - Starved locks (locks not updated for at least 5 minutes) are destroyed automatically and don't hinder MongoBumblebee anymore to executes the changes
+1.4 - MongoBumblebee support Java modules now
+1.4 - Starved locks (locks not updated for at least 5 minutes) are destroyed automatically and don't hinder MongoBumblebee anymore to executes the changes
 
 ## Known issues
 
