@@ -15,7 +15,7 @@ import java.util.Set;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 
 import de.hdi.mongobumblebee.changeset.ChangeEntry;
 import de.hdi.mongobumblebee.changeset.ChangeLog;
@@ -30,7 +30,7 @@ import de.hdi.mongobumblebee.exception.MongoBumblebeeChangeSetException;
  */
 public class ChangeService {
 
-	private static final String DEFAULT_PROFILE = "default";
+	public static final String DEFAULT_PROFILE = "default";
 
 	private final String changeLogsBasePackage;
 	
@@ -40,14 +40,9 @@ public class ChangeService {
 		this(changeLogsBasePackage, null);
 	}
 
-	public ChangeService(String changeLogsBasePackage, Environment environment) {
+	public ChangeService(String changeLogsBasePackage, @NonNull List<String> activeProfiles) {
 		this.changeLogsBasePackage = changeLogsBasePackage;
-
-		if (environment != null && environment.getActiveProfiles() != null && environment.getActiveProfiles().length> 0) {
-			this.activeProfiles = asList(environment.getActiveProfiles());
-		} else {
-			this.activeProfiles = asList(DEFAULT_PROFILE);
-		}
+		this.activeProfiles = activeProfiles;
 	}
 
 	public List<Class<?>> fetchChangeLogs() {

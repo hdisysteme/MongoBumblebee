@@ -1,5 +1,7 @@
 package de.hdi.mongobumblebee;
 
+import static java.util.Arrays.asList;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -152,9 +154,16 @@ public class MongoBumblebee implements InitializingBean {
 		log.info("MongoBumblebee has finished his job.");
 	}
 
-	private void executeMigration() throws MongoBumblebeeConnectionException, MongoBumblebeeException {
+	private void executeMigration() throws MongoBumblebeeException {
 
-		ChangeService service = new ChangeService(changeLogsScanPackage, springEnvironment);
+		List<String> activeProfiles;
+		if (springEnvironment != null && springEnvironment.getActiveProfiles() != null && springEnvironment.getActiveProfiles().length > 0) {
+			activeProfiles = asList(springEnvironment.getActiveProfiles());
+		} else {
+			log.info(ChangeService.DEFAULT_PROFILE + "'used as profile because no environment was set");
+			activeProfiles = asList(ChangeService.DEFAULT_PROFILE);
+		}
+		ChangeService service = new ChangeService(changeLogsScanPackage, activeProfiles);
 
 		for (Class<?> changelogClass : service.fetchChangeLogs()) {
 

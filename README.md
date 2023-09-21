@@ -167,7 +167,7 @@ _Example 1_: annotated change set will be invoked for a `dev` profile
 ```java
 @Profile("dev")
 @ChangeSet(author = "testuser", id = "myDevChangest", order = "01")
-public void devEnvOnly(MongoDatabase db){
+public void devEnvOnly(MongoDatabase db) {
   // ...
 }
 ```
@@ -177,7 +177,7 @@ _Example 2_: all change sets in a change log will be invoked for a `test` profil
 @Profile("test")
 public class ChangelogForTestEnv{
   @ChangeSet(author = "testuser", id = "myTestChangest", order = "01")
-  public void testingEnvOnly(MongoDatabase db){
+  public void testingEnvOnly(MongoDatabase db) {
     // ...
   } 
 }
@@ -191,7 +191,7 @@ To enable the `@Profile` integration, please inject `org.springframework.core.en
 @Bean 
 public MongoBumblebee mongobumblebee(@Autowired Environment environment) {
   MongoBumblebee runner = new MongoBumblebee(uri, dbName);
-  runner.setSpringEnvironment(environment)
+  runner.setSpringEnvironment(environment);
   //... etc
 }
 ```
