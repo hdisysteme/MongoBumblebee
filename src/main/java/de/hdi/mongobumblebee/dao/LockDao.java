@@ -1,6 +1,8 @@
 package de.hdi.mongobumblebee.dao;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -96,7 +98,14 @@ public class LockDao {
 	 */
 	public LocalDateTime getLastAccess(MongoDatabase db) {
 		Document doc = db.getCollection(lockCollectionName).find().first();
-		return doc != null ? doc.get("lastAccess", LocalDateTime.class) : null;
+		if ( doc != null ) {
+			Date dateToConvert = doc.get("lastAccess", Date.class);
+			return dateToConvert
+					.toInstant()
+					.atZone(ZoneId.systemDefault())
+				    .toLocalDateTime();
+		}
+		return null;
 	}
 
 

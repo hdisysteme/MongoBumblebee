@@ -5,6 +5,8 @@ module de.hdi.mongobumblebee {
 	exports de.hdi.mongobumblebee.exception;
 	exports de.hdi.mongobumblebee;
 	
+	opens de.hdi.mongobumblebee;
+	
 	requires lombok;
 	requires org.reflections;
 	requires transitive org.mongodb.driver.sync.client;
