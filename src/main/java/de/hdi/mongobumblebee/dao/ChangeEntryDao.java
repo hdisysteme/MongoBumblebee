@@ -7,6 +7,8 @@ import java.util.Date;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -65,9 +67,11 @@ public class ChangeEntryDao {
 		this.mongoClient = mongoClient;
 
 		mongoDatabase = mongoClient.getDatabase(dbName);
+		
+		MongoTemplate template = new MongoTemplate(mongoClient, dbName);
 
-		ensureChangeLogCollectionIndex(mongoDatabase.getCollection(changelogCollectionName));
-		initializeLock();
+		ensureChangeLogCollectionIndex(template, changelogCollectionName);
+		initializeLock(template);
 		return mongoDatabase;		
 	}
 
@@ -156,24 +160,16 @@ public class ChangeEntryDao {
 		}
 	}
 
-	private void ensureChangeLogCollectionIndex(MongoCollection<Document> collection) {
-		Document index = indexDao.findRequiredChangeAndAuthorIndex(collection);
-		if (index == null) {
-			indexDao.createRequiredUniqueIndex(collection);
-			log.debug("Index in collection " + changelogCollectionName + " was created");
-		} else if (!indexDao.isUnique(index)) {
-			indexDao.dropIndex(collection, index);
-			indexDao.createRequiredUniqueIndex(collection);
-			log.debug("Index in collection " + changelogCollectionName + " was recreated");
-		}
+	private void ensureChangeLogCollectionIndex(MongoTemplate template, String collectionName) {
+		template.indexOps(collectionName).ensureIndex(new CompoundIndexDefinition(new Document().append(ChangeEntry.KEY_CHANGEID, 1).append(ChangeEntry.KEY_AUTHOR, 1)).unique());
 	}
-
+	
 	public void close() {
 		this.mongoClient.close();
 	}
 
-	private void initializeLock() {
-		lockDao.intitializeLock(mongoDatabase);
+	private void initializeLock(MongoTemplate template) {
+		lockDao.intitializeLock(template);
 	}
 
 	public void setIndexDao(ChangeEntryIndexDao changeEntryIndexDao) {

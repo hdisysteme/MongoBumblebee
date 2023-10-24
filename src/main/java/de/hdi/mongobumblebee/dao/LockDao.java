@@ -6,12 +6,14 @@ import java.util.Date;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
 
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Updates;
 
 import de.hdi.mongobumblebee.MongoBumblebee;
@@ -28,23 +30,14 @@ public class LockDao {
 
 	private static final String LOCK_ENTRY_KEY_VAL = "LOCK";
 	
-	private static final int INDEX_SORT_ASC = 1;
-	
 	private String lockCollectionName;
 
 	public LockDao(String lockCollectionName) {
 		this.lockCollectionName = lockCollectionName;
 	}
 
-	public void intitializeLock(MongoDatabase db) {
-		createCollectionAndUniqueIndexIfNotExists(db);
-	}
-
-	private void createCollectionAndUniqueIndexIfNotExists(MongoDatabase db) {
-		Document indexKeys = new Document(KEY_PROP_NAME, INDEX_SORT_ASC);
-		IndexOptions indexOptions = new IndexOptions().unique(true).name(MongoBumblebee.MB_PREFIX + "lock_key_idx");
-
-		db.getCollection(lockCollectionName).createIndex(indexKeys, indexOptions);
+	public void intitializeLock(MongoTemplate template) {
+		template.indexOps(lockCollectionName).ensureIndex(new Index().named(MongoBumblebee.MB_PREFIX + "lock_key_idx").unique().on(KEY_PROP_NAME, Sort.Direction.ASC));
 	}
 
 	public boolean acquireLock(MongoDatabase db) {

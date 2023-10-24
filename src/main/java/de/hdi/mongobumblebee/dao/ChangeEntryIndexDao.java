@@ -12,6 +12,7 @@ import de.hdi.mongobumblebee.changeset.ChangeEntry;
  * @author lstolowski
  * @since 10.12.14
  */
+@Deprecated(forRemoval = true, since = "1.1.1")
 public class ChangeEntryIndexDao {
 
 	public void createRequiredUniqueIndex(MongoCollection<Document> changelogCollection) {

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -48,7 +49,7 @@ class ChangeEntryDaoTest {
 		dao.connectMongoDb(mongoClient, MongoBumblebeeTest.DB_NAME);
 
 		//then
-		verify(indexDaoMock, times(1)).createRequiredUniqueIndex(any(MongoCollection.class));
+		verify(indexDaoMock, times(0)).createRequiredUniqueIndex(any(MongoCollection.class));
 		// and not
 		verify(indexDaoMock, times(0)).dropIndex(any(MongoCollection.class), any(Document.class));
 	}
@@ -96,9 +97,9 @@ class ChangeEntryDaoTest {
 		dao.connectMongoDb(mongoClient, MongoBumblebeeTest.DB_NAME);
 
 		//then
-		verify(indexDaoMock, times(1)).dropIndex(any(MongoCollection.class), any(Document.class));
+		verify(indexDaoMock, times(0)).dropIndex(any(MongoCollection.class), any(Document.class));
 		// and
-		verify(indexDaoMock, times(1)).createRequiredUniqueIndex(any(MongoCollection.class));
+		verify(indexDaoMock, times(0)).createRequiredUniqueIndex(any(MongoCollection.class));
 	}
 
 	@Test
@@ -121,7 +122,7 @@ class ChangeEntryDaoTest {
 		dao.connectMongoDb(mongoClient, MongoBumblebeeTest.DB_NAME);
 
 		// then
-		verify(lockDao).intitializeLock(db);
+		verify(lockDao).intitializeLock(any(MongoTemplate.class));
 
 	}
 

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoDatabase;
 
@@ -21,7 +22,7 @@ class LockDaoTest {
 	private LockDao createDao(MongoDatabase db) {
 		
 		LockDao dao = new LockDao(MongoBumblebeeTest.LOCK_COLLECTION_NAME);
-		dao.intitializeLock(db);
+		dao.intitializeLock(new MongoTemplate(EmbeddedMongoDBHelper.startMongoClient(), db.getName()));
 		return dao;
 	}
 

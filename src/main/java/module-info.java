@@ -17,5 +17,6 @@ module de.hdi.mongobumblebee {
 	requires spring.context;
 	requires transitive spring.core;
 	requires spring.data.mongodb;
+	requires spring.data.commons;
 	
 }
