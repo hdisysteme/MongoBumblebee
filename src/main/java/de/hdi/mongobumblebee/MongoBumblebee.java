@@ -183,12 +183,12 @@ public class MongoBumblebee implements InitializingBean {
 
 					try {
 						if (dao.isNewChange(changeEntry)) {
-							var result = executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
+							Object result = executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
 							changeEntry.setResult(result);
 							dao.save(changeEntry);
 							log.info(changeEntry + " applied. Return= " + result);
 						} else if (service.isRunAlwaysChangeSet(changesetMethod)) {
-							var result = executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
+							Object result = executeChangeSetMethod(changesetMethod, changelogInstance, dao.getMongoDatabase());
 							changeEntry.setResult(result);
 							dao.save(changeEntry);
 							log.info(changeEntry + " reapplied. Return= " + result);

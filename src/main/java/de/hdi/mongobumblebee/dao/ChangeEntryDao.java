@@ -148,7 +148,7 @@ public class ChangeEntryDao {
 			changeLogCollection.insertOne(changeEntry.buildFullDBObject());
 		} else {
 			Bson filter = Filters.and(Filters.eq(ChangeEntry.KEY_CHANGEID, changeEntry.getChangeId()), Filters.eq(ChangeEntry.KEY_AUTHOR, changeEntry.getAuthor()));
-			var document = changeEntry.buildFullDBObject();
+			Document document = changeEntry.buildFullDBObject();
 			changeLogCollection.findOneAndReplace(filter, document);
 		}
 	}

@@ -15,6 +15,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 
 import de.hdi.mongobumblebee.MongoBumblebee;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class LockDao {
 		Bson filter = Filters.eq("status", "LOCK_HELD");
 		Bson update = Updates.set("lastAccess", LocalDateTime.now());
 		
-		var result = db.getCollection(lockCollectionName).updateOne(filter, update);
+		UpdateResult result = db.getCollection(lockCollectionName).updateOne(filter, update);
 		if ( result.getModifiedCount() != 1 )
 			log.warn("Lock couldn't be updated");
 	}
