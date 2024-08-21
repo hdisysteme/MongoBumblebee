@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import java.net.UnknownHostException;
 
 import org.bson.Document;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,11 +39,11 @@ import de.hdi.mongobumblebee.utils.EmbeddedMongoDBHelper;
 public class MongoBumblebeeTest {
 
 	public static final String USER = "testuser";
-	
+
 	public static final String DB_NAME = "MongoBumblebeeTest";
-	
+
 	public static final String CHANGELOG_COLLECTION_NAME = "changelog";
-	
+
 	public static final String LOCK_COLLECTION_NAME = "lock";
 
 	@InjectMocks
@@ -57,9 +57,11 @@ public class MongoBumblebeeTest {
 
 	private MongoDatabase mongoDatabase;
 
+	private MongoClient mongoClient;
+
 	@BeforeEach
 	void init() throws MongoBumblebeeException, UnknownHostException {
-		MongoClient mongoClient = EmbeddedMongoDBHelper.startMongoClient();
+		mongoClient = EmbeddedMongoDBHelper.startMongoClient();
 		mongoDatabase = mongoClient.getDatabase(DB_NAME);
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, DB_NAME);
 		mongoTemplate.dropCollection(CHANGELOG_COLLECTION_NAME);
@@ -71,6 +73,11 @@ public class MongoBumblebeeTest {
 
 		runner.setEnabled(true);
 		runner.setChangeLogsScanPackage(MongoBumblebeeTestResource.class.getPackage().getName());
+	}
+
+	@AfterEach
+	void cleanup() {
+		mongoClient.close();
 	}
 
 	@Test
@@ -98,29 +105,29 @@ public class MongoBumblebeeTest {
 
 		// dbchangelog collection checking
 		long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
-			.countDocuments(new Document()
-			.append(ChangeEntry.KEY_CHANGEID, "test1")
-			.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
+				.countDocuments(new Document()
+						.append(ChangeEntry.KEY_CHANGEID, "test1")
+						.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(1, change1);
 		long change2 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
-			.countDocuments(new Document()
-			.append(ChangeEntry.KEY_CHANGEID, "test2")
-			.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
+				.countDocuments(new Document()
+						.append(ChangeEntry.KEY_CHANGEID, "test2")
+						.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(1, change2);
 		long change3 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
-			.countDocuments(new Document()
-			.append(ChangeEntry.KEY_CHANGEID, "test3")
-			.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
+				.countDocuments(new Document()
+						.append(ChangeEntry.KEY_CHANGEID, "test3")
+						.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(1, change3);
 		long change4 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
-			.countDocuments(new Document()
-			.append(ChangeEntry.KEY_CHANGEID, "test4")
-			.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
+				.countDocuments(new Document()
+						.append(ChangeEntry.KEY_CHANGEID, "test4")
+						.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(0, change4); // changeset does not exist
 
 		long changeAll = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
-			.countDocuments(new Document()
-			.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
+				.countDocuments(new Document()
+						.append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(8, changeAll);
 	}
 
@@ -206,11 +213,6 @@ public class MongoBumblebeeTest {
 		}
 		// then
 		verify(dao).releaseProcessLock();
-	}
-	
-	@AfterAll
-	public static void close() {
-		EmbeddedMongoDBHelper.close();
 	}
 
 }

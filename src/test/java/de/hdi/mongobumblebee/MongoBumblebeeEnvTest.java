@@ -7,7 +7,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 import org.bson.Document;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,9 +43,11 @@ class MongoBumblebeeEnvTest {
 
 	private MongoDatabase mongoDatabase;
 
+	private MongoClient mongoClient;
+
 	@BeforeEach
 	void init() throws Exception {
-		MongoClient mongoClient = EmbeddedMongoDBHelper.startMongoClient();
+		mongoClient = EmbeddedMongoDBHelper.startMongoClient();
 		mongoDatabase = mongoClient.getDatabase(MongoBumblebeeTest.DB_NAME);
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, MongoBumblebeeTest.DB_NAME);
 		mongoTemplate.dropCollection(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME);
@@ -61,6 +63,11 @@ class MongoBumblebeeEnvTest {
 
 		runner.setEnabled(true);
 	} // TODO code duplication
+
+	@AfterEach
+	void cleanup() {
+		mongoClient.close();
+	}
 
 	@Test
 	void shouldRunChangesetWithEnvironment() throws Exception {
@@ -90,11 +97,6 @@ class MongoBumblebeeEnvTest {
 		// then
 		long change1 = mongoDatabase.getCollection(MongoBumblebeeTest.CHANGELOG_COLLECTION_NAME).countDocuments(new Document().append(ChangeEntry.KEY_CHANGEID, "Envtest1").append(ChangeEntry.KEY_AUTHOR, MongoBumblebeeTest.USER));
 		assertEquals(1, change1);
-	}
-	
-	@AfterAll
-	public static void close() {
-		EmbeddedMongoDBHelper.close();
 	}
 
 }
