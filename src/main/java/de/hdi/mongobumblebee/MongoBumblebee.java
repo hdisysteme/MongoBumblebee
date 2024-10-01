@@ -162,7 +162,7 @@ public class MongoBumblebee implements InitializingBean {
 		if (springEnvironment != null && springEnvironment.getActiveProfiles() != null && springEnvironment.getActiveProfiles().length > 0) {
 			activeProfiles = asList(springEnvironment.getActiveProfiles());
 		} else {
-			log.info(ChangeService.DEFAULT_PROFILE + "'used as profile because no environment was set");
+			log.info("'{}' used as profile because no environment was set", ChangeService.DEFAULT_PROFILE);
 			activeProfiles = asList(ChangeService.DEFAULT_PROFILE);
 		}
 		ChangeService service = new ChangeService(changeLogsScanPackage, activeProfiles);
