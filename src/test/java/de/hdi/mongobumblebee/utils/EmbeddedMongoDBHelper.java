@@ -16,7 +16,7 @@ public class EmbeddedMongoDBHelper {
 	private static TransitionWalker.ReachedState<RunningMongodProcess> runningMongod;
 	
 	public static MongoClient startMongoClient() {
-		return startMongoClient(Version.Main.V7_0);
+		return startMongoClient(Version.Main.V5_0);
 	}
 	
 	public static MongoClient startMongoClient(Version.Main version) {
