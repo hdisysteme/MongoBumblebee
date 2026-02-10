@@ -22,7 +22,7 @@ With Maven
 <dependency>
   <groupId>de.hdi</groupId>
   <artifactId>mongobumblebee</artifactId>
-  <version>1.0</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 With Gradle
