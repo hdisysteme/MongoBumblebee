@@ -16,10 +16,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17 for publishing to Maven Central Repository
+      - name: Set up JDK 21 for publishing to Maven Central Repository
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
           cache: maven
           server-id: ossrh
